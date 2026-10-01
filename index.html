@@ -1,1 +1,1727 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>たのしい！アルファベット音声クイズ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&family=Comic+Neue:wght@700&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        alphabet: ['Andika', 'Comic Neue', '"UD デジタル教科書体 N-R"', '"UD Digi Kyokasho N-R"', 'YuKyokasho', 'sans-serif'],
+                        rounded: ['"M PLUS Rounded 1c"', 'sans-serif'],
+                    },
+                    colors: {
+                        popYellow: '#FFD166',
+                        popPink: '#FF6B6B',
+                        popGreen: '#06D6A0',
+                        popBlue: '#118AB2',
+                        popDarkBlue: '#073B4C',
+                        popPurple: '#9D4EDD'
+                    },
+                    keyframes: {
+                        popIn: {
+                            '0%': { transform: 'scale(0.8)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '20%, 60%': { transform: 'translateX(-10px)' },
+                            '40%, 80%': { transform: 'translateX(10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(255, 209, 102, 0.6)' },
+                            '50%': { boxShadow: '0 0 30px rgba(255, 209, 102, 1)' }
+                        }
+                    },
+                    animation: {
+                        popIn: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        shake: 'shake 0.4s ease-in-out',
+                        pulseGlow: 'pulseGlow 1.5s infinite ease-in-out'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Andika', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .alphabet-text {
+            font-family: 'Andika', 'Comic Neue', 'UD デジタル教科書体 N-R', 'YuKyokasho', sans-serif;
+            font-weight: 700;
+        }
+        .card-shadow {
+            box-shadow: 0 10px 0 0 rgba(7, 59, 76, 0.2);
+        }
+        .card-shadow:active {
+            box-shadow: 0 2px 0 0 rgba(7, 59, 76, 0.2);
+            transform: translateY(8px);
+        }
+        .btn-push {
+            transition: all 0.1s ease;
+        }
+        .btn-push:active {
+            transform: translateY(4px);
+        }
+        ruby rt {
+            font-size: 0.55em;
+            font-weight: 800;
+            line-height: 1;
+            color: inherit;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-sky-300 via-indigo-200 to-pink-200 min-h-screen text-popDarkBlue flex flex-col justify-between overflow-x-hidden">
 
+    <header class="p-4 md:p-6 flex justify-between items-center max-w-4xl mx-auto w-full">
+        <div class="flex items-center gap-3">
+            <div class="bg-popYellow p-3 rounded-2xl border-4 border-popDarkBlue shadow-md flex items-center justify-center transform -rotate-6">
+                <i class="fa-solid fa-icons text-3xl text-popDarkBlue"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black tracking-wide text-white drop-shadow-[0_3px_0_#073B4C] flex items-center gap-2">
+                    アルファベット<span class="text-popYellow">クイズ</span>
+                </h1>
+            </div>
+        </div>
+
+        <!-- Score, Streak & Timer Badge -->
+        <div id="status-badges" class="hidden flex flex-wrap items-center justify-end gap-2 md:gap-3">
+            <div class="bg-white/90 backdrop-blur border-3 border-popDarkBlue px-3 py-1.5 md:px-4 md:py-2 rounded-2xl shadow-md flex items-center gap-2">
+                <i id="timer-icon" class="fa-solid fa-clock text-popBlue text-lg md:text-2xl"></i>
+                <span id="timer-display" class="font-alphabet text-lg md:text-2xl font-bold text-popDarkBlue">03:00</span>
+            </div>
+            <div class="bg-white/90 backdrop-blur border-3 border-popDarkBlue px-3 py-1.5 md:px-4 md:py-2 rounded-2xl shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-star text-popYellow text-lg md:text-2xl"></i>
+                <span id="score-display" class="font-alphabet text-lg md:text-2xl font-bold text-popDarkBlue">0</span>
+            </div>
+            <div class="bg-white/90 backdrop-blur border-3 border-popDarkBlue px-3 py-1.5 md:px-4 md:py-2 rounded-2xl shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-fire text-popPink text-lg md:text-2xl"></i>
+                <span id="streak-display" class="font-alphabet text-lg md:text-2xl font-bold text-popPink">0</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center p-4 max-w-4xl mx-auto w-full">
+        
+        <div id="start-screen" class="w-full max-w-2xl bg-white/90 backdrop-blur border-4 border-popDarkBlue rounded-3xl p-6 md:p-8 shadow-xl flex flex-col items-center gap-6 my-auto animate-popIn">
+
+            <!-- Total Points Display -->
+            <div class="w-full text-center bg-gradient-to-r from-amber-50 via-yellow-100 to-amber-50 border-3 border-popDarkBlue rounded-2xl p-3 shadow-sm">
+                <div class="text-xs md:text-sm font-bold text-popDarkBlue flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-crown text-popYellow text-lg md:text-xl drop-shadow-[0_1px_0_#073B4C]"></i>
+                    <span><ruby>累計<rt>るいけい</rt></ruby><ruby>獲得<rt>かくとく</rt></ruby>ポイント</span>
+                </div>
+                <div class="text-3xl md:text-5xl font-black text-popPink font-alphabet mt-1 tracking-wider drop-shadow-sm" id="total-points-display">
+                    0 <span class="text-base md:text-xl text-popDarkBlue font-bold">pt</span>
+                </div>
+            </div>
+
+            <div class="w-full flex flex-col gap-5">
+                <!-- Mode Select -->
+                <div>
+                    <label class="block text-xs md:text-sm font-bold text-popDarkBlue mb-2"><i class="fa-solid fa-gamepad mr-1 text-popBlue"></i> <ruby>遊<rt>あそ</rt></ruby>びかた</label>
+                    <div class="grid grid-cols-3 gap-2 bg-sky-100/70 p-1.5 rounded-2xl border-2 border-popDarkBlue">
+                        <button id="mode-4choice" onclick="setGameMode('4choice')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popYellow border-2 border-popDarkBlue shadow-sm text-popDarkBlue">
+                            4<ruby>択<rt>たく</rt></ruby>クイズ
+                        </button>
+                        <button id="mode-all" onclick="setGameMode('all')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            <span id="all-lock-icon">🔒</span> ぜんぶ(A-Z)
+                        </button>
+                        <button id="mode-cards" onclick="openCardsModeDirectly()" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80">
+                            ずかん
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Time Select -->
+                <div>
+                    <label class="block text-xs md:text-sm font-bold text-popDarkBlue mb-2"><i class="fa-solid fa-hourglass-half mr-1 text-popPurple"></i> じかん</label>
+                    <div class="grid grid-cols-3 gap-2 bg-sky-100/70 p-1.5 rounded-2xl border-2 border-popDarkBlue">
+                        <button id="time-180" onclick="setTimeMode(180)" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popPurple text-white border-2 border-popDarkBlue shadow-sm">
+                            3<ruby>分<rt>ふん</rt></ruby>
+                        </button>
+                        <button id="time-300" onclick="setTimeMode(300)" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80">
+                            5<ruby>分<rt>ふん</rt></ruby>
+                        </button>
+                        <button id="time-unlimited" onclick="setTimeMode('unlimited')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80">
+                            <ruby>無制限<rt>むせいげん</rt></ruby>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game Select Buttons -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-xs md:text-sm font-bold text-popDarkBlue"><i class="fa-solid fa-font mr-1 text-popGreen"></i> ゲーム セレクト</label>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-sky-100/70 p-1.5 rounded-2xl border-2 border-popDarkBlue max-h-52 overflow-y-auto">
+                        <button id="case-upper" onclick="setLetterCase('upper')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popBlue text-white border-2 border-popDarkBlue shadow-sm">
+                            アルファベット <ruby>大文字<rt>おおもじ</rt></ruby>
+                        </button>
+                        <button id="case-lower" onclick="setLetterCase('lower')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80">
+                            アルファベット <ruby>小文字<rt>こもじ</rt></ruby>
+                        </button>
+                        <button id="case-mix" onclick="setLetterCase('mix')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            <span id="mix-lock-icon">🔒</span> <ruby>大文字<rt>おおもじ</rt></ruby>と<ruby>小文字<rt>こもじ</rt></ruby> ミックス
+                        </button>
+                        <button id="case-color" onclick="setLetterCase('color')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🎨 <ruby>色<rt>いろ</rt></ruby>
+                        </button>
+                        <button id="case-animal" onclick="setLetterCase('animal')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🐶 <ruby>動物<rt>どうぶつ</rt></ruby>
+                        </button>
+                        <button id="case-number" onclick="setLetterCase('number')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🔢 <ruby>数<rt>かず</rt></ruby>
+                        </button>
+                        <button id="case-day" onclick="setLetterCase('day')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            📅 <ruby>曜日<rt>ようび</rt></ruby>
+                        </button>
+                        <button id="case-month" onclick="setLetterCase('month')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🗓️ 1<ruby>月<rt>がつ</rt></ruby>～12<ruby>月<rt>がつ</rt></ruby>
+                        </button>
+                        <button id="case-daily" onclick="setLetterCase('daily')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🏠 <ruby>日用品<rt>にちようひん</rt></ruby>
+                        </button>
+                        <button id="case-vegfruit" onclick="setLetterCase('vegfruit')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🥦 <ruby>野菜<rt>やさい</rt></ruby>・くだもの
+                        </button>
+                        <button id="case-dish" onclick="setLetterCase('dish')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🍳 <ruby>料理名<rt>りょうりめい</rt></ruby>
+                        </button>
+                        <button id="case-sports" onclick="setLetterCase('sports')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            ⚽ スポーツ
+                        </button>
+                        <button id="case-building" onclick="setLetterCase('building')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🏢 <ruby>施設<rt>しせつ</rt></ruby>・たてもの
+                        </button>
+                        <button id="case-verb" onclick="setLetterCase('verb')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🏃 <ruby>動詞<rt>どうし</rt></ruby>
+                        </button>
+                        <button id="case-adjective" onclick="setLetterCase('adjective')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            😊 <ruby>形容詞<rt>けいようし</rt></ruby>
+                        </button>
+                        <button id="case-country" onclick="setLetterCase('country')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🌍 <ruby>国<rt>くに</rt></ruby>
+                        </button>
+                        <button id="case-vehicle" onclick="setLetterCase('vehicle')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            🚗 <ruby>乗り物<rt>のりもの</rt></ruby>
+                        </button>
+                        <button id="case-stationery" onclick="setLetterCase('stationery')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            ✏️ <ruby>文房具<rt>ぶんぼうぐ</rt></ruby>
+                        </button>
+                        <button id="case-subject" onclick="setLetterCase('subject')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
+                            📚 <ruby>教科名<rt>きょうかめい</rt></ruby>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start Button -->
+            <button onclick="startGame()" class="w-full mt-2 bg-popGreen hover:bg-emerald-400 text-white font-black border-4 border-popDarkBlue rounded-2xl py-4 text-2xl md:text-3xl card-shadow btn-push flex items-center justify-center gap-3">
+                <i class="fa-solid fa-play"></i> スタート！
+            </button>
+        </div>
+
+        <div id="game-screen" class="hidden w-full flex flex-col items-center">
+            
+            <!-- Game Top Bar -->
+            <div class="w-full max-w-2xl flex items-center justify-between gap-2 mb-6 bg-white/80 backdrop-blur px-4 py-2 rounded-2xl border-3 border-popDarkBlue shadow-sm">
+                <button onclick="goToStartScreen()" class="px-3 py-1.5 rounded-xl bg-gray-200 hover:bg-gray-300 text-popDarkBlue font-bold text-xs md:text-sm border-2 border-popDarkBlue flex items-center gap-1">
+                    <i class="fa-solid fa-house"></i> <ruby>設定<rt>せってい</rt></ruby>にもどる
+                </button>
+
+                <div class="flex items-center gap-1.5 text-xs md:text-sm font-bold">
+                    <span class="text-gray-600 hidden sm:inline"><i class="fa-solid fa-gauge-high"></i> はやさ:</span>
+                    <button id="speed-slow" onclick="setSpeechRate(0.7)" class="px-3 py-1 rounded-full text-popDarkBlue font-bold border border-popDarkBlue/30">ゆっくり</button>
+                    <button id="speed-normal" onclick="setSpeechRate(1.0)" class="px-3 py-1 rounded-full bg-popGreen text-white font-bold border border-popDarkBlue/30">ふつう</button>
+                </div>
+            </div>
+
+            <div id="quiz-container" class="w-full flex flex-col items-center">
+                <!-- Audio Replay Card / Speaker Button -->
+                <div class="relative mb-8 text-center">
+                    <div id="speaker-btn" onclick="playCurrentTargetSound()" class="cursor-pointer bg-gradient-to-tr from-popYellow to-amber-300 border-4 border-popDarkBlue w-32 h-32 md:w-40 md:h-40 rounded-full flex flex-col items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-transform animate-pulseGlow mx-auto group">
+                        <i class="fa-solid fa-volume-high text-5xl md:text-6xl text-popDarkBlue group-hover:scale-110 transition-transform"></i>
+                        <span class="text-xs md:text-sm font-bold text-popDarkBlue mt-2 bg-white/70 px-3 py-0.5 rounded-full">もういちど <ruby>聞<rt>き</rt></ruby>く</span>
+                    </div>
+
+                    <!-- Speech Bubble Hint -->
+                    <div id="hint-bubble" class="hidden mt-4 bg-white border-3 border-popDarkBlue px-6 py-2 rounded-2xl shadow-md inline-flex items-center gap-3 animate-popIn">
+                        <span id="hint-emoji" class="text-3xl">🍎</span>
+                        <div class="text-left">
+                            <p id="hint-word" class="font-alphabet text-lg font-bold text-popDarkBlue">Apple</p>
+                            <p id="hint-text" class="text-xs text-gray-500 font-bold">「A」からはじまる<ruby>単語<rt>たんご</rt></ruby></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Choice Options Grid (4-choice mode) -->
+                <div id="choices-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full max-w-2xl">
+                    <!-- Injected by JS -->
+                </div>
+
+                <!-- Grid Mode (All Grid) -->
+                <div id="all-grid" class="hidden grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-2 md:gap-3 w-full max-w-3xl">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+            <!-- Picture Book Mode Container -->
+            <div id="cards-container" class="hidden w-full max-w-5xl">
+                <p class="text-center font-bold text-popDarkBlue mb-3 text-xs md:text-sm"><i class="fa-solid fa-hand-pointer"></i> カードをおすと <ruby>発音<rt>はつおん</rt></ruby>と<ruby>単語<rt>たんご</rt></ruby>が<ruby>聞<rt>き</rt></ruby>けるよ！</p>
+                
+                <!-- Category Filter Tabs -->
+                <div class="flex flex-wrap justify-center gap-2 mb-6">
+                    <button onclick="filterCardsCategory('all')" id="card-tab-all" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-popYellow border-2 border-popDarkBlue text-popDarkBlue shadow-sm transition-all">ぜんぶ</button>
+                    <button onclick="filterCardsCategory('alphabet')" id="card-tab-alphabet" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🔤 アルファベット</button>
+                    <button onclick="filterCardsCategory('color')" id="card-tab-color" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🎨 <ruby>色<rt>いろ</rt></ruby></button>
+                    <button onclick="filterCardsCategory('animal')" id="card-tab-animal" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🐶 <ruby>動物<rt>どうぶつ</rt></ruby></button>
+                    <button onclick="filterCardsCategory('number')" id="card-tab-number" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🔢 <ruby>数<rt>かず</rt></ruby></button>
+                    <button onclick="filterCardsCategory('day')" id="card-tab-day" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">📅 <ruby>曜日<rt>ようび</rt></ruby></button>
+                    <button onclick="filterCardsCategory('month')" id="card-tab-month" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🗓 1<ruby>月<rt>がつ</rt></ruby>～12<ruby>月<rt>がつ</rt></ruby></button>
+                    <button onclick="filterCardsCategory('daily')" id="card-tab-daily" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🏠 <ruby>日用品<rt>にちようひん</rt></ruby></button>
+                    <button onclick="filterCardsCategory('vegfruit')" id="card-tab-vegfruit" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🥦 <ruby>野菜<rt>やさい</rt></ruby>・くだもの</button>
+                    <button onclick="filterCardsCategory('dish')" id="card-tab-dish" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🍳 <ruby>料理名<rt>りょうりめい</rt></ruby></button>
+                    <button onclick="filterCardsCategory('sports')" id="card-tab-sports" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">⚽ スポーツ</button>
+                    <button onclick="filterCardsCategory('building')" id="card-tab-building" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🏢 <ruby>施設<rt>しせつ</rt></ruby>・たてもの</button>
+                    <button onclick="filterCardsCategory('verb')" id="card-tab-verb" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🏃 <ruby>動詞<rt>どうし</rt></ruby></button>
+                    <button onclick="filterCardsCategory('adjective')" id="card-tab-adjective" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">😊 <ruby>形容詞<rt>けいようし</rt></ruby></button>
+                    <button onclick="filterCardsCategory('country')" id="card-tab-country" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🌍 <ruby>国<rt>くに</rt></ruby></button>
+                    <button onclick="filterCardsCategory('vehicle')" id="card-tab-vehicle" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">🚗 <ruby>乗り物<rt>のりもの</rt></ruby></button>
+                    <button onclick="filterCardsCategory('stationery')" id="card-tab-stationery" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">✏️ <ruby>文房具<rt>ぶんぼうぐ</rt></ruby></button>
+                    <button onclick="filterCardsCategory('subject')" id="card-tab-subject" class="px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all">📚 <ruby>教科名<rt>きょうかめい</rt></ruby></button>
+                </div>
+
+                <div id="cards-sections" class="flex flex-col gap-6">
+                    <!-- Category sections injected by JS -->
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Feedback Overlay Modal -->
+    <div id="feedback-overlay" class="fixed inset-0 pointer-events-none flex items-center justify-center z-50 opacity-0 transition-opacity duration-200">
+        <div id="feedback-box" class="transform scale-50 transition-transform duration-300 flex flex-col items-center justify-center bg-white/95 border-8 border-popDarkBlue rounded-3xl p-8 shadow-2xl">
+            <div id="feedback-icon" class="text-7xl md:text-9xl mb-2">⭕</div>
+            <h2 id="feedback-text" class="text-3xl md:text-5xl font-black text-popDarkBlue tracking-wider"><ruby>正解<rt>せいかい</rt></ruby>！</h2>
+            <p id="feedback-sub" class="text-xl md:text-2xl font-bold text-popPink mt-2 font-alphabet">A is for Apple!</p>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white border-8 border-popDarkBlue rounded-3xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl animate-popIn">
+            <div class="text-6xl md:text-7xl mb-3">⏰</div>
+            <h2 class="text-3xl md:text-4xl font-black text-popDarkBlue mb-2">タイムアップ！</h2>
+            <p class="text-gray-600 font-bold mb-6">じかんになりました！よくがんばったね！</p>
+            <div class="bg-sky-50 border-3 border-popDarkBlue rounded-2xl p-4 mb-6 flex justify-around">
+                <div>
+                    <p class="text-xs font-bold text-gray-500">トータル<ruby>得点<rt>とくてん</rt></ruby></p>
+                    <p id="final-score" class="font-alphabet text-3xl font-bold text-popBlue">0</p>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-gray-500"><ruby>最高<rt>さいこう</rt></ruby><ruby>連続<rt>れんぞく</rt></ruby></p>
+                    <p id="final-streak" class="font-alphabet text-3xl font-bold text-popPink">0</p>
+                </div>
+            </div>
+            <button onclick="restartGame()" class="w-full bg-popYellow hover:bg-amber-400 text-popDarkBlue font-bold border-4 border-popDarkBlue rounded-2xl py-3 text-xl card-shadow btn-push">
+                <i class="fa-solid fa-rotate-right mr-2"></i> もういちど <ruby>遊<rt>あそ</rt></ruby>ぶ
+            </button>
+            <button onclick="goToStartScreen()" class="w-full mt-3 bg-gray-200 hover:bg-gray-300 text-popDarkBlue font-bold border-3 border-popDarkBlue rounded-2xl py-2 text-base">
+                <i class="fa-solid fa-house mr-1"></i> <ruby>設定<rt>せってい</rt></ruby>がめんへ
+            </button>
+        </div>
+    </div>
+
+    <!-- Canvas for Confetti -->
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-40"></canvas>
+
+    <footer class="p-4 text-center text-xs font-bold text-popDarkBlue opacity-80">
+    </footer>
+
+    <script>
+        // Alphabet Dataset (26 Letters)
+        const ALPHABET_DATA = [
+            { letter: 'A', speechText: 'A', word: 'Apple', emoji: '🍎', translation: '「A」は Apple（りんご）' },
+            { letter: 'B', speechText: 'Bee', word: 'Banana', emoji: '🍌', translation: '「B」は Banana（バナナ）' },
+            { letter: 'C', speechText: 'Cee', word: 'Cat', emoji: '🐱', translation: '「C」は Cat（ねこ）' },
+            { letter: 'D', speechText: 'D', word: 'Dog', emoji: '🐶', translation: '「D」は Dog（いぬ）' },
+            { letter: 'E', speechText: 'E', word: 'Elephant', emoji: '🐘', translation: '「E」は Elephant（ぞう）' },
+            { letter: 'F', speechText: 'Ef', word: 'Fish', emoji: '🐟', translation: '「F」は Fish（さかな）' },
+            { letter: 'G', speechText: 'G', word: 'Grape', emoji: '🍇', translation: '「G」は Grape（ぶどう）' },
+            { letter: 'H', speechText: 'H', word: 'House', emoji: '🏠', translation: '「H」は House（いえ）' },
+            { letter: 'I', speechText: 'I', word: 'Ice cream', emoji: '🍦', translation: '「I」は Ice cream（アイス）' },
+            { letter: 'J', speechText: 'J', word: 'Juice', emoji: '🧃', translation: '「J」は Juice（ジュース）' },
+            { letter: 'K', speechText: 'K', word: 'Kangaroo', emoji: '🦘', translation: '「K」は Kangaroo（カンガルー）' },
+            { letter: 'L', speechText: 'L', word: 'Lion', emoji: '🦁', translation: '「L」は Lion（ライオン）' },
+            { letter: 'M', speechText: 'Em', word: 'Monkey', emoji: '🐵', translation: '「M」は Monkey（さる）' },
+            { letter: 'N', speechText: 'En', word: 'Nut', emoji: '🥜', translation: '「N」は Nut（ナッツ）' },
+            { letter: 'O', speechText: 'O', word: 'Orange', emoji: '🍊', translation: '「O」は Orange（オレンジ）' },
+            { letter: 'P', speechText: 'P', word: 'Panda', emoji: '🐼', translation: '「P」は Panda（パンダ）' },
+            { letter: 'Q', speechText: 'Q', word: 'Queen', emoji: '👑', translation: '「Q」は Queen（じょおう）' },
+            { letter: 'R', speechText: 'Ar', word: 'Rabbit', emoji: '🐰', translation: '「R」は Rabbit（うさぎ）' },
+            { letter: 'S', speechText: 'S', word: 'Sun', emoji: '☀️', translation: '「S」は Sun（たいよう）' },
+            { letter: 'T', speechText: 'T', word: 'Tiger', emoji: '🐯', translation: '「T」は Tiger（トラ）' },
+            { letter: 'U', speechText: 'U', word: 'Umbrella', emoji: '☂️', translation: '「U」は Umbrella（かさ）' },
+            { letter: 'V', speechText: 'Vee', word: 'Violin', emoji: '🎻', translation: '「V」は Violin（バイオリン）' },
+            { letter: 'W', speechText: 'W', word: 'Watermelon', emoji: '🍉', translation: '「W」は Watermelon（すいか）' },
+            { letter: 'X', speechText: 'X', word: 'Xylophone', emoji: '🎼', translation: '「X」は Xylophone（もくきん）' },
+            { letter: 'Y', speechText: 'Y', word: 'Yacht', emoji: '⛵', translation: '「Y」は Yacht（ヨット）' },
+            { letter: 'Z', speechText: 'Zee', word: 'Zebra', emoji: '🦓', translation: '「Z」は Zebra（シマウマ）' }
+        ];
+
+        // 20 Colors Dataset
+        const COLOR_DATA = [
+            { letter: 'Red', name: 'Red', speechText: 'Red', word: 'Red', hex: '#EF4444', textHex: '#FFFFFF', emoji: '🍎', ja: '<ruby>赤<rt>あか</rt></ruby>', translation: '「Red」は <ruby>赤<rt>あか</rt></ruby>' },
+            { letter: 'Blue', name: 'Blue', speechText: 'Blue', word: 'Blue', hex: '#3B82F6', textHex: '#FFFFFF', emoji: '🔷', ja: '<ruby>青<rt>あお</rt></ruby>', translation: '「Blue」は <ruby>青<rt>あお</rt></ruby>' },
+            { letter: 'Yellow', name: 'Yellow', speechText: 'Yellow', word: 'Yellow', hex: '#EAB308', textHex: '#1E293B', emoji: '🟡', ja: '<ruby>黄色<rt>きいろ</rt></ruby>', translation: '「Yellow」は <ruby>黄色<rt>きいろ</rt></ruby>' },
+            { letter: 'Green', name: 'Green', speechText: 'Green', word: 'Green', hex: '#22C55E', textHex: '#FFFFFF', emoji: '🍏', ja: '<ruby>緑<rt>みどり</rt></ruby>', translation: '「Green」は <ruby>緑<rt>みどり</rt></ruby>' },
+            { letter: 'Orange', name: 'Orange', speechText: 'Orange', word: 'Orange', hex: '#F97316', textHex: '#FFFFFF', emoji: '🍊', ja: 'オレンジ', translation: '「Orange」は オレンジ' },
+            { letter: 'Purple', name: 'Purple', speechText: 'Purple', word: 'Purple', hex: '#A855F7', textHex: '#FFFFFF', emoji: '🍇', ja: '<ruby>紫<rt>むらさき</rt></ruby>', translation: '「Purple」は <ruby>紫<rt>むらさき</rt></ruby>' },
+            { letter: 'Pink', name: 'Pink', speechText: 'Pink', word: 'Pink', hex: '#EC4899', textHex: '#FFFFFF', emoji: '🌸', ja: 'ピンク', translation: '「Pink」は ピンク' },
+            { letter: 'Brown', name: 'Brown', speechText: 'Brown', word: 'Brown', hex: '#78350F', textHex: '#FFFFFF', emoji: '🐻', ja: '<ruby>茶色<rt>ちゃいろ</rt></ruby>', translation: '「Brown」は <ruby>茶色<rt>ちゃいろ</rt></ruby>' },
+            { letter: 'Black', name: 'Black', speechText: 'Black', word: 'Black', hex: '#1E293B', textHex: '#FFFFFF', emoji: '⬛', ja: '<ruby>黒<rt>くろ</rt></ruby>', translation: '「Black」は <ruby>黒<rt>くろ</rt></ruby>' },
+            { letter: 'White', name: 'White', speechText: 'White', word: 'White', hex: '#FFFFFF', textHex: '#1E293B', emoji: '⬜', ja: '<ruby>白<rt>しろ</rt></ruby>', translation: '「White」は <ruby>白<rt>しろ</rt></ruby>' },
+            { letter: 'Gray', name: 'Gray', speechText: 'Gray', word: 'Gray', hex: '#64748B', textHex: '#FFFFFF', emoji: '🐘', ja: '<ruby>灰色<rt>はいいろ</rt></ruby>', translation: '「Gray」は <ruby>灰色<rt>はいいろ</rt></ruby>' },
+            { letter: 'Light Blue', name: 'Light Blue', speechText: 'Light Blue', word: 'Light Blue', hex: '#38BDF8', textHex: '#1E293B', emoji: '💧', ja: '<ruby>水色<rt>みずいろ</rt></ruby>', translation: '「Light Blue」は <ruby>水色<rt>みずいろ</rt></ruby>' },
+            { letter: 'Light Green', name: 'Light Green', speechText: 'Light Green', word: 'Light Green', hex: '#84CC16', textHex: '#1E293B', emoji: '🍃', ja: '<ruby>黄緑<rt>きみどり</rt></ruby>', translation: '「Light Green」は <ruby>黄緑<rt>きみどり</rt></ruby>' },
+            { letter: 'Gold', name: 'Gold', speechText: 'Gold', word: 'Gold', hex: '#F59E0B', textHex: '#1E293B', emoji: '🥇', ja: '<ruby>金色<rt>きんいろ</rt></ruby>', translation: '「Gold」は <ruby>金色<rt>きんいろ</rt></ruby>' },
+            { letter: 'Silver', name: 'Silver', speechText: 'Silver', word: 'Silver', hex: '#94A3B8', textHex: '#1E293B', emoji: '🥈', ja: '<ruby>銀色<rt>ぎんいろ</rt></ruby>', translation: '「Silver」は <ruby>銀色<rt>ぎんいろ</rt></ruby>' },
+            { letter: 'Peach', name: 'Peach', speechText: 'Peach', word: 'Peach', hex: '#FDBA74', textHex: '#1E293B', emoji: '🍑', ja: 'ピーチ', translation: '「Peach」は ピーチ' },
+            { letter: 'Navy', name: 'Navy', speechText: 'Navy', word: 'Navy', hex: '#1E1B4B', textHex: '#FFFFFF', emoji: '🌌', ja: '<ruby>紺色<rt>こんいろ</rt></ruby>', translation: '「Navy」は <ruby>紺色<rt>こんいろ</rt></ruby>' },
+            { letter: 'Beige', name: 'Beige', speechText: 'Beige', word: 'Beige', hex: '#FEF3C7', textHex: '#1E293B', emoji: '🪵', ja: 'ベージュ', translation: '「Beige」は ベージュ' },
+            { letter: 'Sky Blue', name: 'Sky Blue', speechText: 'Sky Blue', word: 'Sky Blue', hex: '#7DD3FC', textHex: '#1E293B', emoji: '☁️', ja: '<ruby>空色<rt>そらいろ</rt></ruby>', translation: '「Sky Blue」は <ruby>空色<rt>そらいろ</rt></ruby>' },
+            { letter: 'Cyan', name: 'Cyan', speechText: 'Cyan', word: 'Cyan', hex: '#06B6D4', textHex: '#FFFFFF', emoji: '💎', ja: 'シアン', translation: '「Cyan」は シアン' }
+        ];
+
+        // 20 Animals Dataset
+        const ANIMAL_DATA = [
+            { letter: 'Dog', name: 'Dog', speechText: 'Dog', word: 'Dog', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🐶', ja: '<ruby>犬<rt>いぬ</rt></ruby>', translation: '「Dog」は <ruby>犬<rt>いぬ</rt></ruby>' },
+            { letter: 'Cat', name: 'Cat', speechText: 'Cat', word: 'Cat', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🐱', ja: '<ruby>猫<rt>ねこ</rt></ruby>', translation: '「Cat」は <ruby>猫<rt>ねこ</rt></ruby>' },
+            { letter: 'Elephant', name: 'Elephant', speechText: 'Elephant', word: 'Elephant', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🐘', ja: '<ruby>象<rt>ぞう</rt></ruby>', translation: '「Elephant」は <ruby>象<rt>ぞう</rt></ruby>' },
+            { letter: 'Lion', name: 'Lion', speechText: 'Lion', word: 'Lion', hex: '#FEF08A', textHex: '#073B4C', emoji: '🦁', ja: 'ライオン', translation: '「Lion」は ライオン' },
+            { letter: 'Bear', name: 'Bear', speechText: 'Bear', word: 'Bear', hex: '#FED7AA', textHex: '#073B4C', emoji: '🐻', ja: '<ruby>熊<rt>くま</rt></ruby>', translation: '「Bear」は <ruby>熊<rt>くま</rt></ruby>' },
+            { letter: 'Rabbit', name: 'Rabbit', speechText: 'Rabbit', word: 'Rabbit', hex: '#FCE7F3', textHex: '#073B4C', emoji: '🐰', ja: 'うさぎ', translation: '「Rabbit」は うさぎ' },
+            { letter: 'Monkey', name: 'Monkey', speechText: 'Monkey', word: 'Monkey', hex: '#FDE68A', textHex: '#073B4C', emoji: '🐵', ja: '<ruby>猿<rt>さる</rt></ruby>', translation: '「Monkey」は <ruby>猿<rt>さる</rt></ruby>' },
+            { letter: 'Panda', name: 'Panda', speechText: 'Panda', word: 'Panda', hex: '#F3F4F6', textHex: '#073B4C', emoji: '🐼', ja: 'パンダ', translation: '「Panda」は パンダ' },
+            { letter: 'Tiger', name: 'Tiger', speechText: 'Tiger', word: 'Tiger', hex: '#FFD8A8', textHex: '#073B4C', emoji: '🐯', ja: 'トラ', translation: '「Tiger」は トラ' },
+            { letter: 'Pig', name: 'Pig', speechText: 'Pig', word: 'Pig', hex: '#FBCFE8', textHex: '#073B4C', emoji: '🐷', ja: 'ぶた', translation: '「Pig」は ぶた' },
+            { letter: 'Frog', name: 'Frog', speechText: 'Frog', word: 'Frog', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🐸', ja: 'カエル', translation: '「Frog」は カエル' },
+            { letter: 'Horse', name: 'Horse', speechText: 'Horse', word: 'Horse', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🐴', ja: '<ruby>馬<rt>うま</rt></ruby>', translation: '「Horse」は <ruby>馬<rt>うま</rt></ruby>' },
+            { letter: 'Bird', name: 'Bird', speechText: 'Bird', word: 'Bird', hex: '#E0E7FF', textHex: '#073B4C', emoji: '🐦', ja: '<ruby>鳥<rt>とり</rt></ruby>', translation: '「Bird」は <ruby>鳥<rt>とり</rt></ruby>' },
+            { letter: 'Penguin', name: 'Penguin', speechText: 'Penguin', word: 'Penguin', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🐧', ja: 'ペンギン', translation: '「Penguin」は ペンギン' },
+            { letter: 'Giraffe', name: 'Giraffe', speechText: 'Giraffe', word: 'Giraffe', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🦒', ja: 'キリン', translation: '「Giraffe」は キリン' },
+            { letter: 'Koala', name: 'Koala', speechText: 'Koala', word: 'Koala', hex: '#E2E8F0', textHex: '#073B4C', emoji: '🐨', ja: 'コアラ', translation: '「Koala」は コアラ' },
+            { letter: 'Duck', name: 'Duck', speechText: 'Duck', word: 'Duck', hex: '#FEF08A', textHex: '#073B4C', emoji: '🦆', ja: 'アヒル', translation: '「Duck」は アヒル' },
+            { letter: 'Mouse', name: 'Mouse', speechText: 'Mouse', word: 'Mouse', hex: '#F3F4F6', textHex: '#073B4C', emoji: '🐭', ja: 'ねずみ', translation: '「Mouse」は ねずみ' },
+            { letter: 'Sheep', name: 'Sheep', speechText: 'Sheep', word: 'Sheep', hex: '#F5F5F4', textHex: '#073B4C', emoji: '🐑', ja: 'ひつじ', translation: '「Sheep」は ひつじ' },
+            { letter: 'Fox', name: 'Fox', speechText: 'Fox', word: 'Fox', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🦊', ja: 'キツネ', translation: '「Fox」は キツネ' }
+        ];
+
+        // 20 Numbers Dataset
+        const NUMBER_DATA = [
+            { letter: 'One', name: 'One', speechText: 'One', word: 'One', hex: '#EFF6FF', textHex: '#073B4C', emoji: '1️⃣', ja: '<ruby>一<rt>いち</rt></ruby>', translation: '「One」は <ruby>一<rt>いち</rt></ruby>' },
+            { letter: 'Two', name: 'Two', speechText: 'Two', word: 'Two', hex: '#FEF2F2', textHex: '#073B4C', emoji: '2️⃣', ja: '<ruby>二<rt>に</rt></ruby>', translation: '「Two」は <ruby>二<rt>に</rt></ruby>' },
+            { letter: 'Three', name: 'Three', speechText: 'Three', word: 'Three', hex: '#F0FDF4', textHex: '#073B4C', emoji: '3️⃣', ja: '<ruby>三<rt>さん</rt></ruby>', translation: '「Three」は <ruby>三<rt>さん</rt></ruby>' },
+            { letter: 'Four', name: 'Four', speechText: 'Four', word: 'Four', hex: '#FFFBEB', textHex: '#073B4C', emoji: '4️⃣', ja: '<ruby>四<rt>よん</rt></ruby>', translation: '「Four」は <ruby>四<rt>よん</rt></ruby>' },
+            { letter: 'Five', name: 'Five', speechText: 'Five', word: 'Five', hex: '#FAF5FF', textHex: '#073B4C', emoji: '5️⃣', ja: '<ruby>五<rt>ご</rt></ruby>', translation: '「Five」は <ruby>五<rt>ご</rt></ruby>' },
+            { letter: 'Six', name: 'Six', speechText: 'Six', word: 'Six', hex: '#ECFEFF', textHex: '#073B4C', emoji: '6️⃣', ja: '<ruby>六<rt>ろく</rt></ruby>', translation: '「Six」は <ruby>六<rt>ろく</rt></ruby>' },
+            { letter: 'Seven', name: 'Seven', speechText: 'Seven', word: 'Seven', hex: '#FDF2F8', textHex: '#073B4C', emoji: '7️⃣', ja: '<ruby>七<rt>なな</rt></ruby>', translation: '「Seven」は <ruby>七<rt>なな</rt></ruby>' },
+            { letter: 'Eight', name: 'Eight', speechText: 'Eight', word: 'Eight', hex: '#F0FDFA', textHex: '#073B4C', emoji: '8️⃣', ja: '<ruby>八<rt>はち</rt></ruby>', translation: '「Eight」は <ruby>八<rt>はち</rt></ruby>' },
+            { letter: 'Nine', name: 'Nine', speechText: 'Nine', word: 'Nine', hex: '#FFF7ED', textHex: '#073B4C', emoji: '9️⃣', ja: '<ruby>九<rt>きゅう</rt></ruby>', translation: '「Nine」は <ruby>九<rt>きゅう</rt></ruby>' },
+            { letter: 'Ten', name: 'Ten', speechText: 'Ten', word: 'Ten', hex: '#FEFCE8', textHex: '#073B4C', emoji: '🔟', ja: '<ruby>十<rt>じゅう</rt></ruby>', translation: '「Ten」は <ruby>十<rt>じゅう</rt></ruby>' },
+            { letter: 'Eleven', name: 'Eleven', speechText: 'Eleven', word: 'Eleven', hex: '#EFF6FF', textHex: '#073B4C', emoji: '⑪', ja: '<ruby>十一<rt>じゅういち</rt></ruby>', translation: '「Eleven」は <ruby>十一<rt>じゅういち</rt></ruby>' },
+            { letter: 'Twelve', name: 'Twelve', speechText: 'Twelve', word: 'Twelve', hex: '#FEF2F2', textHex: '#073B4C', emoji: '⑫', ja: '<ruby>十二<rt>じゅうに</rt></ruby>', translation: '「Twelve」は <ruby>十二<rt>じゅうに</rt></ruby>' },
+            { letter: 'Thirteen', name: 'Thirteen', speechText: 'Thirteen', word: 'Thirteen', hex: '#F0FDF4', textHex: '#073B4C', emoji: '⑬', ja: '<ruby>十三<rt>じゅうさん</rt></ruby>', translation: '「Thirteen」は <ruby>十三<rt>じゅうさん</rt></ruby>' },
+            { letter: 'Fourteen', name: 'Fourteen', speechText: 'Fourteen', word: 'Fourteen', hex: '#FFFBEB', textHex: '#073B4C', emoji: '⑭', ja: '<ruby>十四<rt>じゅうよん</rt></ruby>', translation: '「Fourteen」は <ruby>十四<rt>じゅうよん</rt></ruby>' },
+            { letter: 'Fifteen', name: 'Fifteen', speechText: 'Fifteen', word: 'Fifteen', hex: '#FAF5FF', textHex: '#073B4C', emoji: '⑮', ja: '<ruby>十五<rt>じゅうご</rt></ruby>', translation: '「Fifteen」は <ruby>十五<rt>じゅうご</rt></ruby>' },
+            { letter: 'Sixteen', name: 'Sixteen', speechText: 'Sixteen', word: 'Sixteen', hex: '#ECFEFF', textHex: '#073B4C', emoji: '⑯', ja: '<ruby>十六<rt>じゅうろく</rt></ruby>', translation: '「Sixteen」は <ruby>十六<rt>じゅうろく</rt></ruby>' },
+            { letter: 'Seventeen', name: 'Seventeen', speechText: 'Seventeen', word: 'Seventeen', hex: '#FDF2F8', textHex: '#073B4C', emoji: '⑰', ja: '<ruby>十七<rt>じゅうなな</rt></ruby>', translation: '「Seventeen」は <ruby>十七<rt>じゅうなな</rt></ruby>' },
+            { letter: 'Eighteen', name: 'Eighteen', speechText: 'Eighteen', word: 'Eighteen', hex: '#F0FDFA', textHex: '#073B4C', emoji: '⑱', ja: '<ruby>十八<rt>じゅうはち</rt></ruby>', translation: '「Eighteen」は <ruby>十八<rt>じゅうはち</rt></ruby>' },
+            { letter: 'Nineteen', name: 'Nineteen', speechText: 'Nineteen', word: 'Nineteen', hex: '#FFF7ED', textHex: '#073B4C', emoji: '⑲', ja: '<ruby>十九<rt>じゅうきゅう</rt></ruby>', translation: '「Nineteen」は <ruby>十九<rt>じゅうきゅう</rt></ruby>' },
+            { letter: 'Twenty', name: 'Twenty', speechText: 'Twenty', word: 'Twenty', hex: '#FEFCE8', textHex: '#073B4C', emoji: '⑳', ja: '<ruby>二十<rt>にじゅう</rt></ruby>', translation: '「Twenty」は <ruby>二十<rt>にじゅう</rt></ruby>' }
+        ];
+
+        // Advanced Numbers Dataset
+        const NUMBER_ADVANCED_DATA = [
+            { letter: 'Twenty-one', name: 'Twenty-one', speechText: 'Twenty-one', word: 'Twenty-one', hex: '#EFF6FF', textHex: '#073B4C', emoji: '21', ja: '<ruby>二十一<rt>にじゅういち</rt></ruby>', translation: '「Twenty-one」は <ruby>二十一<rt>にじゅういち</rt></ruby>' },
+            { letter: 'Twenty-two', name: 'Twenty-two', speechText: 'Twenty-two', word: 'Twenty-two', hex: '#FEF2F2', textHex: '#073B4C', emoji: '22', ja: '<ruby>二十二<rt>にじゅうに</rt></ruby>', translation: '「Twenty-two」は <ruby>二十二<rt>にじゅうに</rt></ruby>' },
+            { letter: 'Twenty-three', name: 'Twenty-three', speechText: 'Twenty-three', word: 'Twenty-three', hex: '#F0FDF4', textHex: '#073B4C', emoji: '23', ja: '<ruby>二十三<rt>にじゅうさん</rt></ruby>', translation: '「Twenty-three」は <ruby>二十三<rt>にじゅうさん</rt></ruby>' },
+            { letter: 'Twenty-four', name: 'Twenty-four', speechText: 'Twenty-four', word: 'Twenty-four', hex: '#FFFBEB', textHex: '#073B4C', emoji: '24', ja: '<ruby>二十四<rt>にじゅうよん</rt></ruby>', translation: '「Twenty-four」は <ruby>二十四<rt>にじゅうよん</rt></ruby>' },
+            { letter: 'Twenty-five', name: 'Twenty-five', speechText: 'Twenty-five', word: 'Twenty-five', hex: '#FAF5FF', textHex: '#073B4C', emoji: '25', ja: '<ruby>二十五<rt>にじゅうご</rt></ruby>', translation: '「Twenty-five」は <ruby>二十五<rt>にじゅうご</rt></ruby>' },
+            { letter: 'Twenty-six', name: 'Twenty-six', speechText: 'Twenty-six', word: 'Twenty-six', hex: '#ECFEFF', textHex: '#073B4C', emoji: '26', ja: '<ruby>二十六<rt>にじゅうろく</rt></ruby>', translation: '「Twenty-six」は <ruby>二十六<rt>にじゅうろく</rt></ruby>' },
+            { letter: 'Twenty-seven', name: 'Twenty-seven', speechText: 'Twenty-seven', word: 'Twenty-seven', hex: '#FDF2F8', textHex: '#073B4C', emoji: '27', ja: '<ruby>二十七<rt>にじゅうなな</rt></ruby>', translation: '「Twenty-seven」は <ruby>二十七<rt>にじゅうなな</rt></ruby>' },
+            { letter: 'Twenty-eight', name: 'Twenty-eight', speechText: 'Twenty-eight', word: 'Twenty-eight', hex: '#F0FDFA', textHex: '#073B4C', emoji: '28', ja: '<ruby>二十八<rt>にじゅうはち</rt></ruby>', translation: '「Twenty-eight」は <ruby>二十八<rt>にじゅうはち</rt></ruby>' },
+            { letter: 'Twenty-nine', name: 'Twenty-nine', speechText: 'Twenty-nine', word: 'Twenty-nine', hex: '#FFF7ED', textHex: '#073B4C', emoji: '29', ja: '<ruby>二十九<rt>にじゅうきゅう</rt></ruby>', translation: '「Twenty-nine」は <ruby>二十九<rt>にじゅうきゅう</rt></ruby>' },
+            { letter: 'Thirty', name: 'Thirty', speechText: 'Thirty', word: 'Thirty', hex: '#FEFCE8', textHex: '#073B4C', emoji: '30', ja: '<ruby>三十<rt>さんじゅう</rt></ruby>', translation: '「Thirty」は <ruby>三十<rt>さんじゅう</rt></ruby>' },
+            { letter: 'Forty', name: 'Forty', speechText: 'Forty', word: 'Forty', hex: '#EFF6FF', textHex: '#073B4C', emoji: '40', ja: '<ruby>四十<rt>よんじゅう</rt></ruby>', translation: '「Forty」は <ruby>四十<rt>よんじゅう</rt></ruby>' },
+            { letter: 'Fifty', name: 'Fifty', speechText: 'Fifty', word: 'Fifty', hex: '#FEF2F2', textHex: '#073B4C', emoji: '50', ja: '<ruby>五十<rt>ごじゅう</rt></ruby>', translation: '「Fifty」は <ruby>五十<rt>ごじゅう</rt></ruby>' },
+            { letter: 'Sixty', name: 'Sixty', speechText: 'Sixty', word: 'Sixty', hex: '#F0FDF4', textHex: '#073B4C', emoji: '60', ja: '<ruby>六十<rt>ろくじゅう</rt></ruby>', translation: '「Sixty」は <ruby>六十<rt>ろくじゅう</rt></ruby>' },
+            { letter: 'Seventy', name: 'Seventy', speechText: 'Seventy', word: 'Seventy', hex: '#FFFBEB', textHex: '#073B4C', emoji: '70', ja: '<ruby>七十<rt>ななじゅう</rt></ruby>', translation: '「Seventy」は <ruby>七十<rt>ななじゅう</rt></ruby>' },
+            { letter: 'Eighty', name: 'Eighty', speechText: 'Eighty', word: 'Eighty', hex: '#FAF5FF', textHex: '#073B4C', emoji: '80', ja: '<ruby>八十<rt>はちじゅう</rt></ruby>', translation: '「Eighty」は <ruby>八十<rt>はちじゅう</rt></ruby>' },
+            { letter: 'Ninety', name: 'Ninety', speechText: 'Ninety', word: 'Ninety', hex: '#ECFEFF', textHex: '#073B4C', emoji: '90', ja: '<ruby>九十<rt>きゅうじゅう</rt></ruby>', translation: '「Ninety」は <ruby>九十<rt>きゅうじゅう</rt></ruby>' },
+            { letter: 'One hundred', name: 'One hundred', speechText: 'One hundred', word: 'One hundred', hex: '#FDF2F8', textHex: '#073B4C', emoji: '100', ja: '<ruby>百<rt>ひゃく</rt></ruby>', translation: '「One hundred」は <ruby>百<rt>ひゃく</rt></ruby>' },
+            { letter: 'One thousand', name: 'One thousand', speechText: 'One thousand', word: 'One thousand', hex: '#F0FDFA', textHex: '#073B4C', emoji: '1000', ja: '<ruby>千<rt>せん</rt></ruby>', translation: '「One thousand」は <ruby>千<rt>せん</rt></ruby>' },
+            { letter: 'Ten thousand', name: 'Ten thousand', speechText: 'Ten thousand', word: 'Ten thousand', hex: '#FFF7ED', textHex: '#073B4C', emoji: '10000', ja: '<ruby>一万<rt>いちまん</rt></ruby>', translation: '「Ten thousand」は <ruby>一万<rt>いちまん</rt></ruby>' }
+        ];
+
+        // Days of the Week Dataset
+        const DAYS_DATA = [
+            { letter: 'Sunday', name: 'Sunday', speechText: 'Sunday', word: 'Sunday', hex: '#FFEDD5', textHex: '#073B4C', emoji: '☀️', ja: '<ruby>日曜日<rt>にちようび</rt></ruby>', translation: '「Sunday」は <ruby>日曜日<rt>にちようび</rt></ruby>' },
+            { letter: 'Monday', name: 'Monday', speechText: 'Monday', word: 'Monday', hex: '#FEF08A', textHex: '#073B4C', emoji: '🌙', ja: '<ruby>月曜日<rt>げつようび</rt></ruby>', translation: '「Monday」は <ruby>月曜日<rt>げつようび</rt></ruby>' },
+            { letter: 'Tuesday', name: 'Tuesday', speechText: 'Tuesday', word: 'Tuesday', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🔥', ja: '<ruby>火曜日<rt>かようび</rt></ruby>', translation: '「Tuesday」は <ruby>火曜日<rt>かようび</rt></ruby>' },
+            { letter: 'Wednesday', name: 'Wednesday', speechText: 'Wednesday', word: 'Wednesday', hex: '#E0F2FE', textHex: '#073B4C', emoji: '💧', ja: '<ruby>水曜日<rt>すいようび</rt></ruby>', translation: '「Wednesday」は <ruby>水曜日<rt>すいようび</rt></ruby>' },
+            { letter: 'Thursday', name: 'Thursday', speechText: 'Thursday', word: 'Thursday', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🌳', ja: '<ruby>木曜日<rt>もくようび</rt></ruby>', translation: '「Thursday」は <ruby>木曜日<rt>もくようび</rt></ruby>' },
+            { letter: 'Friday', name: 'Friday', speechText: 'Friday', word: 'Friday', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🪙', ja: '<ruby>金曜日<rt>きんようび</rt></ruby>', translation: '「Friday」は <ruby>金曜日<rt>きんようび</rt></ruby>' },
+            { letter: 'Saturday', name: 'Saturday', speechText: 'Saturday', word: 'Saturday', hex: '#F3E8FF', textHex: '#073B4C', emoji: '🪐', ja: '<ruby>土曜日<rt>どようび</rt></ruby>', translation: '「Saturday」は <ruby>土曜日<rt>どようび</rt></ruby>' }
+        ];
+
+        // Months of the Year Dataset
+        const MONTHS_DATA = [
+            { letter: 'January', name: 'January', speechText: 'January', word: 'January', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🎍', ja: '1<ruby>月<rt>がつ</rt></ruby>', translation: '「January」は 1<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'February', name: 'February', speechText: 'February', word: 'February', hex: '#FDF2F8', textHex: '#073B4C', emoji: '🍫', ja: '2<ruby>月<rt>がつ</rt></ruby>', translation: '「February」は 2<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'March', name: 'March', speechText: 'March', word: 'March', hex: '#F0FDF4', textHex: '#073B4C', emoji: '🌸', ja: '3<ruby>月<rt>がつ</rt></ruby>', translation: '「March」は 3<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'April', name: 'April', speechText: 'April', word: 'April', hex: '#FFFBEB', textHex: '#073B4C', emoji: '🎒', ja: '4<ruby>月<rt>がつ</rt></ruby>', translation: '「April」は 4<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'May', name: 'May', speechText: 'May', word: 'May', hex: '#ECFEFF', textHex: '#073B4C', emoji: '🎏', ja: '5<ruby>月<rt>がつ</rt></ruby>', translation: '「May」は 5<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'June', name: 'June', speechText: 'June', word: 'June', hex: '#FEF2F2', textHex: '#073B4C', emoji: '☔', ja: '6<ruby>月<rt>がつ</rt></ruby>', translation: '「June」は 6<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'July', name: 'July', speechText: 'July', word: 'July', hex: '#FEF08A', textHex: '#073B4C', emoji: '🎋', ja: '7<ruby>月<rt>がつ</rt></ruby>', translation: '「July」は 7<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'August', name: 'August', speechText: 'August', word: 'August', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🌻', ja: '8<ruby>月<rt>がつ</rt></ruby>', translation: '「August」は 8<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'September', name: 'September', speechText: 'September', word: 'September', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🌕', ja: '9<ruby>月<rt>がつ</rt></ruby>', translation: '「September」は 9<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'October', name: 'October', speechText: 'October', word: 'October', hex: '#FFD8A8', textHex: '#073B4C', emoji: '🎃', ja: '10<ruby>月<rt>がつ</rt></ruby>', translation: '「October」は 10<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'November', name: 'November', speechText: 'November', word: 'November', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🍁', ja: '11<ruby>月<rt>がつ</rt></ruby>', translation: '「November」は 11<ruby>月<rt>がつ</rt></ruby>' },
+            { letter: 'December', name: 'December', speechText: 'December', word: 'December', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🎄', ja: '12<ruby>月<rt>がつ</rt></ruby>', translation: '「December」は 12<ruby>月<rt>がつ</rt></ruby>' }
+        ];
+
+        // Daily Household Items Dataset
+        const DAILY_DATA = [
+            { letter: 'Pen', name: 'Pen', speechText: 'Pen', word: 'Pen', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🖊️', ja: 'ペン', translation: '「Pen」は ペン' },
+            { letter: 'Book', name: 'Book', speechText: 'Book', word: 'Book', hex: '#FEF2F2', textHex: '#073B4C', emoji: '📖', ja: '<ruby>本<rt>ほん</rt></ruby>', translation: '「Book」は <ruby>本<rt>ほん</rt></ruby>' },
+            { letter: 'Cup', name: 'Cup', speechText: 'Cup', word: 'Cup', hex: '#F0FDF4', textHex: '#073B4C', emoji: '🥤', ja: 'コップ', translation: '「Cup」は コップ' },
+            { letter: 'Clock', name: 'Clock', speechText: 'Clock', word: 'Clock', hex: '#FFFBEB', textHex: '#073B4C', emoji: '⏰', ja: '<ruby>時計<rt>とけい</rt></ruby>', translation: '「Clock」は <ruby>時計<rt>とけい</rt></ruby>' },
+            { letter: 'Chair', name: 'Chair', speechText: 'Chair', word: 'Chair', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🪑', ja: '<ruby>椅子<rt>いす</rt></ruby>', translation: '「Chair」は <ruby>椅子<rt>いす</rt></ruby>' },
+            { letter: 'Desk', name: 'Desk', speechText: 'Desk', word: 'Desk', hex: '#ECFEFF', textHex: '#073B4C', emoji: '🛋️', ja: '<ruby>机<rt>つくえ</rt></ruby>', translation: '「Desk」は <ruby>机<rt>つくえ</rt></ruby>' },
+            { letter: 'Key', name: 'Key', speechText: 'Key', word: 'Key', hex: '#FDF2F8', textHex: '#073B4C', emoji: '🔑', ja: '<ruby>鍵<rt>かぎ</rt></ruby>', translation: '「Key」は <ruby>鍵<rt>かぎ</rt></ruby>' },
+            { letter: 'Phone', name: 'Phone', speechText: 'Phone', word: 'Phone', hex: '#F0FDFA', textHex: '#073B4C', emoji: '📱', ja: '<ruby>電話<rt>でんわ</rt></ruby>', translation: '「Phone」は <ruby>電話<rt>でんわ</rt></ruby>' },
+            { letter: 'Soap', name: 'Soap', speechText: 'Soap', word: 'Soap', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🧼', ja: '<ruby>石鹸<rt>せっけん</rt></ruby>', translation: '「Soap」は <ruby>石鹸<rt>せっけん</rt></ruby>' },
+            { letter: 'Towel', name: 'Towel', speechText: 'Towel', word: 'Towel', hex: '#FEFCE8', textHex: '#073B4C', emoji: '🧺', ja: 'タオル', translation: '「Towel」は タオル' },
+            { letter: 'Shoe', name: 'Shoe', speechText: 'Shoe', word: 'Shoe', hex: '#EFF6FF', textHex: '#073B4C', emoji: '👟', ja: '<ruby>靴<rt>くつ</rt></ruby>', translation: '「Shoe」は <ruby>靴<rt>くつ</rt></ruby>' },
+            { letter: 'Hat', name: 'Hat', speechText: 'Hat', word: 'Hat', hex: '#FEF2F2', textHex: '#073B4C', emoji: '🧢', ja: '<ruby>帽子<rt>ぼうし</rt></ruby>', translation: '「Hat」は <ruby>帽子<rt>ぼうし</rt></ruby>' },
+            { letter: 'Bag', name: 'Bag', speechText: 'Bag', word: 'Bag', hex: '#F0FDF4', textHex: '#073B4C', emoji: '🎒', ja: 'かばん', translation: '「Bag」は かばん' },
+            { letter: 'Spoon', name: 'Spoon', speechText: 'Spoon', word: 'Spoon', hex: '#FFFBEB', textHex: '#073B4C', emoji: '🥄', ja: 'スプーン', translation: '「Spoon」は スプーン' },
+            { letter: 'Fork', name: 'Fork', speechText: 'Fork', word: 'Fork', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🍴', ja: 'フォーク', translation: '「Fork」は フォーク' },
+            { letter: 'Door', name: 'Door', speechText: 'Door', word: 'Door', hex: '#ECFEFF', textHex: '#073B4C', emoji: '🚪', ja: 'ドア', translation: '「Door」は ドア' },
+            { letter: 'Window', name: 'Window', speechText: 'Window', word: 'Window', hex: '#FDF2F8', textHex: '#073B4C', emoji: '🪟', ja: '<ruby>窓<rt>まど</rt></ruby>', translation: '「Window」は <ruby>窓<rt>まど</rt></ruby>' },
+            { letter: 'Bed', name: 'Bed', speechText: 'Bed', word: 'Bed', hex: '#F0FDFA', textHex: '#073B4C', emoji: '🛏️', ja: 'ベッド', translation: '「Bed」は ベッド' },
+            { letter: 'Toothbrush', name: 'Toothbrush', speechText: 'Toothbrush', word: 'Toothbrush', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🪥', ja: '<ruby>歯<rt>は</rt></ruby>ブラシ', translation: '「Toothbrush」は <ruby>歯<rt>は</rt></ruby>ブラシ' },
+            { letter: 'Scissors', name: 'Scissors', speechText: 'Scissors', word: 'Scissors', hex: '#FEFCE8', textHex: '#073B4C', emoji: '✂️', ja: 'はさみ', translation: '「Scissors」は はさみ' }
+        ];
+
+        // Vegetables & Fruits Dataset
+        const VEGFRUIT_DATA = [
+            { letter: 'Tomato', name: 'Tomato', speechText: 'Tomato', word: 'Tomato', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🍅', ja: 'トマト', translation: '「Tomato」は トマト' },
+            { letter: 'Carrot', name: 'Carrot', speechText: 'Carrot', word: 'Carrot', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🥕', ja: 'にんじん', translation: '「Carrot」は にんじん' },
+            { letter: 'Potato', name: 'Potato', speechText: 'Potato', word: 'Potato', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🥔', ja: 'じゃがいも', translation: '「Potato」は じゃがいも' },
+            { letter: 'Onion', name: 'Onion', speechText: 'Onion', word: 'Onion', hex: '#FEF08A', textHex: '#073B4C', emoji: '🧅', ja: 'たまねぎ', translation: '「Onion」は たまねぎ' },
+            { letter: 'Corn', name: 'Corn', speechText: 'Corn', word: 'Corn', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🌽', ja: 'とうもろこし', translation: '「Corn」は とうもろこし' },
+            { letter: 'Broccoli', name: 'Broccoli', speechText: 'Broccoli', word: 'Broccoli', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🥦', ja: 'ブロッコリー', translation: '「Broccoli」は ブロッコリー' },
+            { letter: 'Cucumber', name: 'Cucumber', speechText: 'Cucumber', word: 'Cucumber', hex: '#F0FDF4', textHex: '#073B4C', emoji: '🥒', ja: 'きゅうり', translation: '「Cucumber」は きゅうり' },
+            { letter: 'Mushroom', name: 'Mushroom', speechText: 'Mushroom', word: 'Mushroom', hex: '#F5F5F4', textHex: '#073B4C', emoji: '🍄', ja: 'きのこ', translation: '「Mushroom」は きのこ' },
+            { letter: 'Pumpkin', name: 'Pumpkin', speechText: 'Pumpkin', word: 'Pumpkin', hex: '#FFD8A8', textHex: '#073B4C', emoji: '🎃', ja: 'かぼちゃ', translation: '「Pumpkin」は かぼちゃ' },
+            { letter: 'Cabbage', name: 'Cabbage', speechText: 'Cabbage', word: 'Cabbage', hex: '#ECFDF5', textHex: '#073B4C', emoji: '🥬', ja: 'キャベツ', translation: '「Cabbage」は キャベツ' },
+            { letter: 'Strawberry', name: 'Strawberry', speechText: 'Strawberry', word: 'Strawberry', hex: '#FCE7F3', textHex: '#073B4C', emoji: '🍓', ja: 'いちご', translation: '「Strawberry」は いちご' },
+            { letter: 'Peach', name: 'Peach', speechText: 'Peach', word: 'Peach', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🍑', ja: 'もも', translation: '「Peach」は もも' },
+            { letter: 'Lemon', name: 'Lemon', speechText: 'Lemon', word: 'Lemon', hex: '#FEF08A', textHex: '#073B4C', emoji: '🍋', ja: 'レモン', translation: '「Lemon」は レモン' },
+            { letter: 'Melon', name: 'Melon', speechText: 'Melon', word: 'Melon', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🍈', ja: 'メロン', translation: '「Melon」は メロン' },
+            { letter: 'Pineapple', name: 'Pineapple', speechText: 'Pineapple', word: 'Pineapple', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🍍', ja: 'パイナップル', translation: '「Pineapple」は パイナップル' },
+            { letter: 'Cherry', name: 'Cherry', speechText: 'Cherry', word: 'Cherry', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🍒', ja: 'さくらんぼ', translation: '「Cherry」は さくらんぼ' },
+            { letter: 'Watermelon', name: 'Watermelon', speechText: 'Watermelon', word: 'Watermelon', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🍉', ja: 'すいか', translation: '「Watermelon」は すいか' },
+            { letter: 'Banana', name: 'Banana', speechText: 'Banana', word: 'Banana', hex: '#FEF08A', textHex: '#073B4C', emoji: '🍌', ja: 'バナナ', translation: '「Banana」は バナナ' },
+            { letter: 'Apple', name: 'Apple', speechText: 'Apple', word: 'Apple', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🍎', ja: 'りんご', translation: '「Apple」は りんご' },
+            { letter: 'Grape', name: 'Grape', speechText: 'Grape', word: 'Grape', hex: '#F3E8FF', textHex: '#073B4C', emoji: '🍇', ja: 'ぶどう', translation: '「Grape」は ぶどう' }
+        ];
+
+        // Dishes Dataset
+        const DISH_DATA = [
+            { letter: 'Curry', name: 'Curry', speechText: 'Curry', word: 'Curry', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🍛', ja: 'カレー', translation: '「Curry」は カレー' },
+            { letter: 'Pizza', name: 'Pizza', speechText: 'Pizza', word: 'Pizza', hex: '#FEF08A', textHex: '#073B4C', emoji: '🍕', ja: 'ピザ', translation: '「Pizza」は ピザ' },
+            { letter: 'Pasta', name: 'Pasta', speechText: 'Pasta', word: 'Pasta', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🍝', ja: 'パスタ', translation: '「Pasta」は パスタ' },
+            { letter: 'Soup', name: 'Soup', speechText: 'Soup', word: 'Soup', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🍲', ja: 'スープ', translation: '「Soup」は スープ' },
+            { letter: 'Salad', name: 'Salad', speechText: 'Salad', word: 'Salad', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🥗', ja: 'サラダ', translation: '「Salad」は サラダ' },
+            { letter: 'Hamburger', name: 'Hamburger', speechText: 'Hamburger', word: 'Hamburger', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🍔', ja: 'ハンバーガー', translation: '「Hamburger」は ハンバーガー' },
+            { letter: 'Steak', name: 'Steak', speechText: 'Steak', word: 'Steak', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🥩', ja: 'ステーキ', translation: '「Steak」は ステーキ' },
+            { letter: 'Sandwich', name: 'Sandwich', speechText: 'Sandwich', word: 'Sandwich', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🥪', ja: 'サンドイッチ', translation: '「Sandwich」は サンドイッチ' },
+            { letter: 'Omelet', name: 'Omelet', speechText: 'Omelet', word: 'Omelet', hex: '#FEF08A', textHex: '#073B4C', emoji: '🍳', ja: 'オムレツ', translation: '「Omelet」は オムレツ' },
+            { letter: 'Rice ball', name: 'Rice ball', speechText: 'Rice ball', word: 'Rice ball', hex: '#F5F5F4', textHex: '#073B4C', emoji: '🍙', ja: 'おにぎり', translation: '「Rice ball」は おにぎり' },
+            { letter: 'Ramen', name: 'Ramen', speechText: 'Ramen', word: 'Ramen', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🍜', ja: 'ラーメン', translation: '「Ramen」は ラーメン' },
+            { letter: 'Cake', name: 'Cake', speechText: 'Cake', word: 'Cake', hex: '#FCE7F3', textHex: '#073B4C', emoji: '🍰', ja: 'ケーキ', translation: '「Cake」は ケーキ' },
+            { letter: 'Pie', name: 'Pie', speechText: 'Pie', word: 'Pie', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🥧', ja: 'パイ', translation: '「Pie」は パイ' },
+            { letter: 'Ice cream', name: 'Ice cream', speechText: 'Ice cream', word: 'Ice cream', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🍦', ja: 'アイスクリーム', translation: '「Ice cream」は アイスクリーム' },
+            { letter: 'Cookie', name: 'Cookie', speechText: 'Cookie', word: 'Cookie', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🍪', ja: 'クッキー', translation: '「Cookie」は クッキー' },
+            { letter: 'Pancake', name: 'Pancake', speechText: 'Pancake', word: 'Pancake', hex: '#FEF08A', textHex: '#073B4C', emoji: '🥞', ja: 'パンケーキ', translation: '「Pancake」は パンケーキ' },
+            { letter: 'Popcorn', name: 'Popcorn', speechText: 'Popcorn', word: 'Popcorn', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🍿', ja: 'ポップコーン', translation: '「Popcorn」は ポップコーン' },
+            { letter: 'Bread', name: 'Bread', speechText: 'Bread', word: 'Bread', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🍞', ja: 'パン', translation: '「Bread」は パン' },
+            { letter: 'Sushi', name: 'Sushi', speechText: 'Sushi', word: 'Sushi', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🍣', ja: 'おすし', translation: '「Sushi」は おすし' },
+            { letter: 'Stew', name: 'Stew', speechText: 'Stew', word: 'Stew', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🍲', ja: 'シチュー', translation: '「Stew」は シチュー' }
+        ];
+
+        // Sports Dataset
+        const SPORTS_DATA = [
+            { letter: 'Soccer', name: 'Soccer', speechText: 'Soccer', word: 'Soccer', hex: '#E0F2FE', textHex: '#073B4C', emoji: '⚽', ja: 'サッカー', translation: '「Soccer」は サッカー' },
+            { letter: 'Baseball', name: 'Baseball', speechText: 'Baseball', word: 'Baseball', hex: '#FFFBEB', textHex: '#073B4C', emoji: '⚾', ja: '<ruby>野球<rt>やきゅう</rt></ruby>', translation: '「Baseball」は <ruby>野球<rt>やきゅう</rt></ruby>' },
+            { letter: 'Basketball', name: 'Basketball', speechText: 'Basketball', word: 'Basketball', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🏀', ja: 'バスケ', translation: '「Basketball」は バスケ' },
+            { letter: 'Tennis', name: 'Tennis', speechText: 'Tennis', word: 'Tennis', hex: '#FEF08A', textHex: '#073B4C', emoji: '🎾', ja: 'テニス', translation: '「Tennis」は テニス' },
+            { letter: 'Swimming', name: 'Swimming', speechText: 'Swimming', word: 'Swimming', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🏊', ja: '<ruby>水泳<rt>すいえい</rt></ruby>', translation: '「Swimming」は <ruby>水泳<rt>すいえい</rt></ruby>' },
+            { letter: 'Volleyball', name: 'Volleyball', speechText: 'Volleyball', word: 'Volleyball', hex: '#FDF2F8', textHex: '#073B4C', emoji: '🏐', ja: 'バレーボール', translation: '「Volleyball」は バレーボール' },
+            { letter: 'Golf', name: 'Golf', speechText: 'Golf', word: 'Golf', hex: '#DCFCE7', textHex: '#073B4C', emoji: '⛳', ja: 'ゴルフ', translation: '「Golf」は ゴルフ' },
+            { letter: 'Running', name: 'Running', speechText: 'Running', word: 'Running', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🏃', ja: '<ruby>走<rt>はし</rt></ruby>ること', translation: '「Running」は <ruby>走<rt>はし</rt></ruby>ること' },
+            { letter: 'Table tennis', name: 'Table tennis', speechText: 'Table tennis', word: 'Table tennis', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🏓', ja: '<ruby>卓球<rt>たっきゅう</rt></ruby>', translation: '「Table tennis」は <ruby>卓球<rt>たっきゅう</rt></ruby>' },
+            { letter: 'Badminton', name: 'Badminton', speechText: 'Badminton', word: 'Badminton', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🏸', ja: 'バドミントン', translation: '「Badminton」は バドミントン' },
+            { letter: 'Skiing', name: 'Skiing', speechText: 'Skiing', word: 'Skiing', hex: '#EFF6FF', textHex: '#073B4C', emoji: '⛷️', ja: 'スキー', translation: '「Skiing」は スキー' },
+            { letter: 'Skating', name: 'Skating', speechText: 'Skating', word: 'Skating', hex: '#ECFEFF', textHex: '#073B4C', emoji: '⛸️', ja: 'スケート', translation: '「Skating」は スケート' },
+            { letter: 'Judo', name: 'Judo', speechText: 'Judo', word: 'Judo', hex: '#F5F5F4', textHex: '#073B4C', emoji: '🥋', ja: '<ruby>柔道<rt>じゅうどう</rt></ruby>', translation: '「Judo」は <ruby>柔道<rt>じゅうどう</rt></ruby>' },
+            { letter: 'Karate', name: 'Karate', speechText: 'Karate', word: 'Karate', hex: '#FEF2F2', textHex: '#073B4C', emoji: '🥋', ja: '<ruby>空手<rt>からて</rt></ruby>', translation: '「Karate」は <ruby>空手<rt>からて</rt></ruby>' },
+            { letter: 'Bowling', name: 'Bowling', speechText: 'Bowling', word: 'Bowling', hex: '#F0FDFA', textHex: '#073B4C', emoji: '🎳', ja: 'ボウリング', translation: '「Bowling」は ボウリング' },
+            { letter: 'Dance', name: 'Dance', speechText: 'Dance', word: 'Dance', hex: '#FCE7F3', textHex: '#073B4C', emoji: '💃', ja: 'ダンス', translation: '「Dance」は ダンス' },
+            { letter: 'Boxing', name: 'Boxing', speechText: 'Boxing', word: 'Boxing', hex: '#FFD8A8', textHex: '#073B4C', emoji: '🥊', ja: 'ボクシング', translation: '「Boxing」は ボクシング' },
+            { letter: 'Cycling', name: 'Cycling', speechText: 'Cycling', word: 'Cycling', hex: '#F0FDF4', textHex: '#073B4C', emoji: '🚴', ja: 'サイクリング', translation: '「Cycling」は サイクリング' },
+            { letter: 'Fishing', name: 'Fishing', speechText: 'Fishing', word: 'Fishing', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🎣', ja: '<ruby>釣<rt>つ</rt></ruby>り', translation: '「Fishing」は <ruby>釣<rt>つ</rt></ruby>り' },
+            { letter: 'Surfing', name: 'Surfing', speechText: 'Surfing', word: 'Surfing', hex: '#7DD3FC', textHex: '#073B4C', emoji: '🏄', ja: 'サーフィン', translation: '「Surfing」は サーフィン' }
+        ];
+
+        // Building Dataset
+        const BUILDING_DATA = [
+            { letter: 'School', name: 'School', speechText: 'School', word: 'School', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🏫', ja: '<ruby>学校<rt>がっこう</rt></ruby>', translation: '「School」は <ruby>学校<rt>がっこう</rt></ruby>' },
+            { letter: 'Hospital', name: 'Hospital', speechText: 'Hospital', word: 'Hospital', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🏥', ja: '<ruby>病院<rt>びょういん</rt></ruby>', translation: '「Hospital」は <ruby>病院<rt>びょういん</rt></ruby>' },
+            { letter: 'Park', name: 'Park', speechText: 'Park', word: 'Park', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🛝', ja: '<ruby>公園<rt>こうえん</rt></ruby>', translation: '「Park」は <ruby>公園<rt>こうえん</rt></ruby>' },
+            { letter: 'Station', name: 'Station', speechText: 'Station', word: 'Station', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🚉', ja: '<ruby>駅<rt>えき</rt></ruby>', translation: '「Station」は <ruby>駅<rt>えき</rt></ruby>' },
+            { letter: 'Library', name: 'Library', speechText: 'Library', word: 'Library', hex: '#FEF08A', textHex: '#073B4C', emoji: '📚', ja: '<ruby>図書館<rt>としょかん</rt></ruby>', translation: '「Library」は <ruby>図書館<rt>としょかん</rt></ruby>' },
+            { letter: 'Bank', name: 'Bank', speechText: 'Bank', word: 'Bank', hex: '#F0FDFA', textHex: '#073B4C', emoji: '🏦', ja: '<ruby>銀行<rt>ぎんこう</rt></ruby>', translation: '「Bank」は <ruby>銀行<rt>ぎんこう</rt></ruby>' },
+            { letter: 'Post office', name: 'Post office', speechText: 'Post office', word: 'Post office', hex: '#FDF2F8', textHex: '#073B4C', emoji: '🏣', ja: '<ruby>郵便局<rt>ゆうびんきょく</rt></ruby>', translation: '「Post office」は <ruby>郵便局<rt>ゆうびんきょく</rt></ruby>' },
+            { letter: 'Store', name: 'Store', speechText: 'Store', word: 'Store', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🏪', ja: '<ruby>店<rt>みせ</rt></ruby>', translation: '「Store」は <ruby>店<rt>みせ</rt></ruby>' },
+            { letter: 'Restaurant', name: 'Restaurant', speechText: 'Restaurant', word: 'Restaurant', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🍽️', ja: 'レストラン', translation: '「Restaurant」は レストラン' },
+            { letter: 'Zoo', name: 'Zoo', speechText: 'Zoo', word: 'Zoo', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🦁', ja: '<ruby>動物園<rt>どうぶつえん</rt></ruby>', translation: '「Zoo」は <ruby>動物園<rt>どうぶつえん</rt></ruby>' },
+            { letter: 'Aquarium', name: 'Aquarium', speechText: 'Aquarium', word: 'Aquarium', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🐬', ja: '<ruby>水族館<rt>すいぞくかん</rt></ruby>', translation: '「Aquarium」は <ruby>水族館<rt>すいぞくかん</rt></ruby>' },
+            { letter: 'Police station', name: 'Police station', speechText: 'Police station', word: 'Police station', hex: '#E0F2FE', textHex: '#073B4C', emoji: '👮', ja: '<ruby>警察署<rt>けいさつしょ</rt></ruby>', translation: '「Police station」は <ruby>警察署<rt>けいさつしょ</rt></ruby>' },
+            { letter: 'Fire station', name: 'Fire station', speechText: 'Fire station', word: 'Fire station', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🚒', ja: '<ruby>消防署<rt>しょうぼうしょ</rt></ruby>', translation: '「Fire station」は <ruby>消防署<rt>しょうぼうしょ</rt></ruby>' },
+            { letter: 'Museum', name: 'Museum', speechText: 'Museum', word: 'Museum', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🏛️', ja: '<ruby>博物館<rt>はくぶつかん</rt></ruby>', translation: '「Museum」は <ruby>博物館<rt>はくぶつかん</rt></ruby>' },
+            { letter: 'Airport', name: 'Airport', speechText: 'Airport', word: 'Airport', hex: '#ECFEFF', textHex: '#073B4C', emoji: '✈️', ja: '<ruby>空港<rt>くうこう</rt></ruby>', translation: '「Airport」は <ruby>空港<rt>くうこう</rt></ruby>' },
+            { letter: 'Hotel', name: 'Hotel', speechText: 'Hotel', word: 'Hotel', hex: '#FEF2F2', textHex: '#073B4C', emoji: '🏨', ja: 'ホテル', translation: '「Hotel」は ホテル' },
+            { letter: 'Castle', name: 'Castle', speechText: 'Castle', word: 'Castle', hex: '#F5F5F4', textHex: '#073B4C', emoji: '🏰', ja: '<ruby>城<rt>しろ</rt></ruby>', translation: '「Castle」は <ruby>城<rt>しろ</rt></ruby>' },
+            { letter: 'Church', name: 'Church', speechText: 'Church', word: 'Church', hex: '#FCE7F3', textHex: '#073B4C', emoji: '⛪', ja: '<ruby>教会<rt>きょうかい</rt></ruby>', translation: '「Church」は <ruby>教会<rt>きょうかい</rt></ruby>' },
+            { letter: 'House', name: 'House', speechText: 'House', word: 'House', hex: '#FFD8A8', textHex: '#073B4C', emoji: '🏠', ja: '<ruby>家<rt>いえ</rt></ruby>', translation: '「House」は <ruby>家<rt>いえ</rt></ruby>' },
+            { letter: 'Amusement park', name: 'Amusement park', speechText: 'Amusement park', word: 'Amusement park', hex: '#FEF08A', textHex: '#073B4C', emoji: '🎡', ja: '<ruby>遊園地<rt>ゆうえんち</rt></ruby>', translation: '「Amusement park」は <ruby>遊園地<rt>ゆうえんち</rt></ruby>' }
+        ];
+
+        // Verbs Dataset
+        const VERB_DATA = [
+            { letter: 'Run', name: 'Run', speechText: 'Run', word: 'Run', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🏃', ja: '<ruby>走<rt>はし</rt></ruby>る', translation: '「Run」は <ruby>走<rt>はし</rt></ruby>る' },
+            { letter: 'Walk', name: 'Walk', speechText: 'Walk', word: 'Walk', hex: '#FEF08A', textHex: '#073B4C', emoji: '🚶', ja: '<ruby>歩<rt>ある</rt></ruby>く', translation: '「Walk」は <ruby>歩<rt>ある</rt></ruby>く' },
+            { letter: 'Jump', name: 'Jump', speechText: 'Jump', word: 'Jump', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🦘', ja: '<ruby>跳<rt>と</rt></ruby>ぶ', translation: '「Jump」は <ruby>跳<rt>と</rt></ruby>ぶ' },
+            { letter: 'Swim', name: 'Swim', speechText: 'Swim', word: 'Swim', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🏊', ja: '<ruby>泳<rt>およ</rt></ruby>ぐ', translation: '「Swim」は <ruby>泳<rt>およ</rt></ruby>ぐ' },
+            { letter: 'Eat', name: 'Eat', speechText: 'Eat', word: 'Eat', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🍽️', ja: '<ruby>食<rt>た</rt></ruby>べる', translation: '「Eat」は <ruby>食<rt>た</rt></ruby>べる' },
+            { letter: 'Drink', name: 'Drink', speechText: 'Drink', word: 'Drink', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🥤', ja: '<ruby>飲<rt>の</rt></ruby>む', translation: '「Drink」は <ruby>飲<rt>の</rt></ruby>む' },
+            { letter: 'Sleep', name: 'Sleep', speechText: 'Sleep', word: 'Sleep', hex: '#FAF5FF', textHex: '#073B4C', emoji: '😴', ja: '<ruby>眠<rt>ねむ</rt></ruby>る', translation: '「Sleep」は <ruby>眠<rt>ねむ</rt></ruby>る' },
+            { letter: 'Read', name: 'Read', speechText: 'Read', word: 'Read', hex: '#FEF3C7', textHex: '#073B4C', emoji: '📖', ja: '<ruby>読<rt>よ</rt></ruby>む', translation: '「Read」は <ruby>読<rt>よ</rt></ruby>む' },
+            { letter: 'Write', name: 'Write', speechText: 'Write', word: 'Write', hex: '#FDF2F8', textHex: '#073B4C', emoji: '✍️', ja: '<ruby>書<rt>か</rt></ruby>く', translation: '「Write」は <ruby>書<rt>か</rt></ruby>く' },
+            { letter: 'Sing', name: 'Sing', speechText: 'Sing', word: 'Sing', hex: '#FCE7F3', textHex: '#073B4C', emoji: '🎤', ja: '<ruby>歌<rt>うた</rt></ruby>う', translation: '「Sing」は <ruby>歌<rt>うた</rt></ruby>う' },
+            { letter: 'Dance', name: 'Dance', speechText: 'Dance', word: 'Dance', hex: '#FFD8A8', textHex: '#073B4C', emoji: '💃', ja: '<ruby>踊<rt>おど</rt></ruby>る', translation: '「Dance」は <ruby>踊<rt>おど</rt></ruby>る' },
+            { letter: 'Play', name: 'Play', speechText: 'Play', word: 'Play', hex: '#ECFEFF', textHex: '#073B4C', emoji: '🎮', ja: '<ruby>遊<rt>あそ</rt></ruby>ぶ', translation: '「Play」は <ruby>遊<rt>あそ</rt></ruby>ぶ' },
+            { letter: 'Cook', name: 'Cook', speechText: 'Cook', word: 'Cook', hex: '#FEF2F2', textHex: '#073B4C', emoji: '🍳', ja: '<ruby>料理<rt>りょうり</rt></ruby>する', translation: '「Cook」は <ruby>料理<rt>りょうり</rt></ruby>する' },
+            { letter: 'Wash', name: 'Wash', speechText: 'Wash', word: 'Wash', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🧼', ja: '<ruby>洗<rt>あら</rt></ruby>う', translation: '「Wash」は <ruby>洗<rt>あら</rt></ruby>う' },
+            { letter: 'Smile', name: 'Smile', speechText: 'Smile', word: 'Smile', hex: '#FEF9C3', textHex: '#073B4C', emoji: '😊', ja: '<ruby>笑<rt>わら</rt></ruby>う', translation: '「Smile」は <ruby>笑<rt>わら</rt></ruby>う' },
+            { letter: 'Study', name: 'Study', speechText: 'Study', word: 'Study', hex: '#F0FDFA', textHex: '#073B4C', emoji: '✏️', ja: '<ruby>勉強<rt>べんきょう</rt></ruby>する', translation: '「Study」は <ruby>勉強<rt>べんきょう</rt></ruby>する' },
+            { letter: 'Fly', name: 'Fly', speechText: 'Fly', word: 'Fly', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🦅', ja: '<ruby>飛<rt>と</rt></ruby>ぶ', translation: '「Fly」は <ruby>飛<rt>と</rt></ruby>ぶ' },
+            { letter: 'Stand', name: 'Stand', speechText: 'Stand', word: 'Stand', hex: '#F5F5F4', textHex: '#073B4C', emoji: '🧍', ja: '<ruby>立<rt>た</rt></ruby>つ', translation: '「Stand」は <ruby>立<rt>た</rt></ruby>つ' },
+            { letter: 'Sit', name: 'Sit', speechText: 'Sit', word: 'Sit', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🪑', ja: '<ruby>座<rt>すわ</rt></ruby>る', translation: '「Sit」は <ruby>座<rt>すわ</rt></ruby>る' },
+            { letter: 'Listen', name: 'Listen', speechText: 'Listen', word: 'Listen', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🎧', ja: '<ruby>聞<rt>き</rt></ruby>く', translation: '「Listen」は <ruby>聞<rt>き</rt></ruby>く' }
+        ];
+
+        // Adjectives Dataset
+        const ADJECTIVE_DATA = [
+            { letter: 'Happy', name: 'Happy', speechText: 'Happy', word: 'Happy', hex: '#FEF08A', textHex: '#073B4C', emoji: '😊', ja: '<ruby>嬉<rt>うれ</rt></ruby>しい', translation: '「Happy」は <ruby>嬉<rt>うれ</rt></ruby>しい' },
+            { letter: 'Sad', name: 'Sad', speechText: 'Sad', word: 'Sad', hex: '#EFF6FF', textHex: '#073B4C', emoji: '😢', ja: '<ruby>悲<rt>かな</rt></ruby>しい', translation: '「Sad」は <ruby>悲<rt>かな</rt></ruby>しい' },
+            { letter: 'Big', name: 'Big', speechText: 'Big', word: 'Big', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🐘', ja: '<ruby>大<rt>おお</rt></ruby>きい', translation: '「Big」は <ruby>大<rt>おお</rt></ruby>きい' },
+            { letter: 'Small', name: 'Small', speechText: 'Small', word: 'Small', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🐭', ja: '<ruby>小<rt>ちい</rt></ruby>さい', translation: '「Small」は <ruby>小<rt>ちい</rt></ruby>さい' },
+            { letter: 'Hot', name: 'Hot', speechText: 'Hot', word: 'Hot', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🔥', ja: '<ruby>暑<rt>あつ</rt></ruby>い', translation: '「Hot」は <ruby>暑<rt>あつ</rt></ruby>い' },
+            { letter: 'Cold', name: 'Cold', speechText: 'Cold', word: 'Cold', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🧊', ja: '<ruby>冷<rt>つめ</rt></ruby>たい', translation: '「Cold」は <ruby>冷<rt>つめ</rt></ruby>たい' },
+            { letter: 'Fast', name: 'Fast', speechText: 'Fast', word: 'Fast', hex: '#FFD8A8', textHex: '#073B4C', emoji: '🚀', ja: '<ruby>速<rt>はや</rt></ruby>い', translation: '「Fast」は <ruby>速<rt>はや</rt></ruby>い' },
+            { letter: 'Slow', name: 'Slow', speechText: 'Slow', word: 'Slow', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🐢', ja: '<ruby>遅<rt>おそ</rt></ruby>い', translation: '「Slow」は <ruby>遅<rt>おそ</rt></ruby>い' },
+            { letter: 'Good', name: 'Good', speechText: 'Good', word: 'Good', hex: '#F0FDF4', textHex: '#073B4C', emoji: '👍', ja: '<ruby>良<rt>よ</rt></ruby>い', translation: '「Good」は <ruby>良<rt>よ</rt></ruby>い' },
+            { letter: 'Cute', name: 'Cute', speechText: 'Cute', word: 'Cute', hex: '#FCE7F3', textHex: '#073B4C', emoji: '🧸', ja: '<ruby>可愛<rt>かわい</rt></ruby>い', translation: '「Cute」は <ruby>可愛<rt>かわい</rt></ruby>い' },
+            { letter: 'Strong', name: 'Strong', speechText: 'Strong', word: 'Strong', hex: '#FFF7ED', textHex: '#073B4C', emoji: '💪', ja: '<ruby>強<rt>つよ</rt></ruby>い', translation: '「Strong」は <ruby>強<rt>つよ</rt></ruby>い' },
+            { letter: 'Long', name: 'Long', speechText: 'Long', word: 'Long', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🦒', ja: '<ruby>長<rt>なが</rt></ruby>い', translation: '「Long」は <ruby>長<rt>なが</rt></ruby>い' },
+            { letter: 'Short', name: 'Short', speechText: 'Short', word: 'Short', hex: '#FDF2F8', textHex: '#073B4C', emoji: '📏', ja: '<ruby>短<rt>みじか</rt></ruby>い', translation: '「Short」は <ruby>短<rt>みじか</rt></ruby>い' },
+            { letter: 'New', name: 'New', speechText: 'New', word: 'New', hex: '#ECFEFF', textHex: '#073B4C', emoji: '✨', ja: '<ruby>新<rt>あたら</rt></ruby>しい', translation: '「New」は <ruby>新<rt>あたら</rt></ruby>しい' },
+            { letter: 'Old', name: 'Old', speechText: 'Old', word: 'Old', hex: '#F5F5F4', textHex: '#073B4C', emoji: '📜', ja: '<ruby>古<rt>ふる</rt></ruby>い', translation: '「Old」は <ruby>古<rt>ふる</rt></ruby>い' },
+            { letter: 'Bright', name: 'Bright', speechText: 'Bright', word: 'Bright', hex: '#FEF08A', textHex: '#073B4C', emoji: '☀️', ja: '<ruby>明<rt>あかる</rt></ruby>い', translation: '「Bright」は <ruby>明<rt>あかる</rt></ruby>い' },
+            { letter: 'Dark', name: 'Dark', speechText: 'Dark', word: 'Dark', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🌙', ja: '<ruby>暗<rt>くら</rt></ruby>い', translation: '「Dark」は <ruby>暗<rt>くら</rt></ruby>い' },
+            { letter: 'Heavy', name: 'Heavy', speechText: 'Heavy', word: 'Heavy', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🏋️️', ja: '<ruby>重<rt>おも</rt></ruby>い', translation: '「Heavy」は <ruby>重<rt>おも</rt></ruby>い' },
+            { letter: 'Light', name: 'Light', speechText: 'Light', word: 'Light', hex: '#F0FDFA', textHex: '#073B4C', emoji: '🎈', ja: '<ruby>軽<rt>かる</rt></ruby>い', translation: '「Light」は <ruby>軽<rt>かる</rt></ruby>い' },
+            { letter: 'Clean', name: 'Clean', speechText: 'Clean', word: 'Clean', hex: '#E0F2FE', textHex: '#073B4C', emoji: '✨', ja: 'きれいな', translation: '「Clean」は きれいな' }
+        ];
+
+        // Country Dataset
+        const COUNTRY_DATA = [
+            { letter: 'Japan', name: 'Japan', speechText: 'Japan', word: 'Japan', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🇯🇵', ja: '<ruby>日本<rt>にほん</rt></ruby>', translation: '「Japan」は <ruby>日本<rt>にほん</rt></ruby>' },
+            { letter: 'America', name: 'America', speechText: 'America', word: 'America', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🇺🇸', ja: 'アメリカ', translation: '「America」は アメリカ' },
+            { letter: 'Canada', name: 'Canada', speechText: 'Canada', word: 'Canada', hex: '#FEF2F2', textHex: '#073B4C', emoji: '🇨🇦', ja: 'カナダ', translation: '「Canada」は カナダ' },
+            { letter: 'China', name: 'China', speechText: 'China', word: 'China', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🇨🇳', ja: '<ruby>中国<rt>ちゅうごく</rt></ruby>', translation: '「China」は <ruby>中国<rt>ちゅうごく</rt></ruby>' },
+            { letter: 'Korea', name: 'Korea', speechText: 'Korea', word: 'Korea', hex: '#F0FDFA', textHex: '#073B4C', emoji: '🇰🇷', ja: '<ruby>韓国<rt>かんこく</rt></ruby>', translation: '「Korea」は <ruby>韓国<rt>かんこく</rt></ruby>' },
+            { letter: 'United Kingdom', name: 'United Kingdom', speechText: 'United Kingdom', word: 'United Kingdom', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🇬🇧', ja: 'イギリス', translation: '「United Kingdom」は イギリス' },
+            { letter: 'France', name: 'France', speechText: 'France', word: 'France', hex: '#FDF2F8', textHex: '#073B4C', emoji: '🇫🇷', ja: 'フランス', translation: '「France」は フランス' },
+            { letter: 'Germany', name: 'Germany', speechText: 'Germany', word: 'Germany', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🇩🇪', ja: 'ドイツ', translation: '「Germany」は ドイツ' },
+            { letter: 'Italy', name: 'Italy', speechText: 'Italy', word: 'Italy', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🇮🇹', ja: 'イタリア', translation: '「Italy」は イタリア' },
+            { letter: 'Spain', name: 'Spain', speechText: 'Spain', word: 'Spain', hex: '#FEF08A', textHex: '#073B4C', emoji: '🇪🇸', ja: 'スペイン', translation: '「Spain」は スペイン' },
+            { letter: 'Australia', name: 'Australia', speechText: 'Australia', word: 'Australia', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🇦🇺', ja: 'オーストラリア', translation: '「Australia」は オーストラリア' },
+            { letter: 'India', name: 'India', speechText: 'India', word: 'India', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🇮🇳', ja: 'インド', translation: '「India」は インド' },
+            { letter: 'Brazil', name: 'Brazil', speechText: 'Brazil', word: 'Brazil', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🇧🇷', ja: 'ブラジル', translation: '「Brazil」は ブラジル' },
+            { letter: 'Egypt', name: 'Egypt', speechText: 'Egypt', word: 'Egypt', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🇪🇬', ja: 'エジプト', translation: '「Egypt」は エジプト' },
+            { letter: 'Mexico', name: 'Mexico', speechText: 'Mexico', word: 'Mexico', hex: '#F0FDF4', textHex: '#073B4C', emoji: '🇲🇽', ja: 'メキシコ', translation: '「Mexico」は メキシコ' },
+            { letter: 'Singapore', name: 'Singapore', speechText: 'Singapore', word: 'Singapore', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🇸🇬', ja: 'シンガポール', translation: '「Singapore」は シンガポール' },
+            { letter: 'Thailand', name: 'Thailand', speechText: 'Thailand', word: 'Thailand', hex: '#ECFEFF', textHex: '#073B4C', emoji: '🇹🇭', ja: 'タイ', translation: '「Thailand」は タイ' },
+            { letter: 'Vietnam', name: 'Vietnam', speechText: 'Vietnam', word: 'Vietnam', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🇻🇳', ja: 'ベトナム', translation: '「Vietnam」は ベトナム' },
+            { letter: 'Philippines', name: 'Philippines', speechText: 'Philippines', word: 'Philippines', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🇵🇭', ja: 'フィリピン', translation: '「Philippines」は フィリピン' },
+            { letter: 'Switzerland', name: 'Switzerland', speechText: 'Switzerland', word: 'Switzerland', hex: '#FEF2F2', textHex: '#073B4C', emoji: '🇨🇭', ja: 'スイス', translation: '「Switzerland」は スイス' }
+        ];
+
+        // Vehicle Dataset
+        const VEHICLE_DATA = [
+            { letter: 'Car', name: 'Car', speechText: 'Car', word: 'Car', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🚗', ja: '<ruby>車<rt>くるま</rt></ruby>', translation: '「Car」は <ruby>車<rt>くるま</rt></ruby>' },
+            { letter: 'Bus', name: 'Bus', speechText: 'Bus', word: 'Bus', hex: '#FEF08A', textHex: '#073B4C', emoji: '🚌', ja: 'バス', translation: '「Bus」は バス' },
+            { letter: 'Train', name: 'Train', speechText: 'Train', word: 'Train', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🚆', ja: '<ruby>電車<rt>でんしゃ</rt></ruby>', translation: '「Train」は <ruby>電車<rt>でんしゃ</rt></ruby>' },
+            { letter: 'Bullet train', name: 'Bullet train', speechText: 'Bullet train', word: 'Bullet train', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🚅', ja: '<ruby>新幹線<rt>しんかんせん</rt></ruby>', translation: '「Bullet train」は <ruby>新幹線<rt>しんかんせん</rt></ruby>' },
+            { letter: 'Airplane', name: 'Airplane', speechText: 'Airplane', word: 'Airplane', hex: '#E0F2FE', textHex: '#073B4C', emoji: '✈️️', ja: '<ruby>飛行機<rt>ひこうき</rt></ruby>', translation: '「Airplane」は <ruby>飛行機<rt>ひこうき</rt></ruby>' },
+            { letter: 'Bicycle', name: 'Bicycle', speechText: 'Bicycle', word: 'Bicycle', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🚲', ja: '<ruby>自転車<rt>じてんしゃ</rt></ruby>', translation: '「Bicycle」は <ruby>自転車<rt>じてんしゃ</rt></ruby>' },
+            { letter: 'Ship', name: 'Ship', speechText: 'Ship', word: 'Ship', hex: '#F0FDFA', textHex: '#073B4C', emoji: '🚢', ja: '<ruby>船<rt>ふね</rt></ruby>', translation: '「Ship」は <ruby>船<rt>ふね</rt></ruby>' },
+            { letter: 'Rocket', name: 'Rocket', speechText: 'Rocket', word: 'Rocket', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🚀', ja: 'ロケット', translation: '「Rocket」は ロケット' },
+            { letter: 'Helicopter', name: 'Helicopter', speechText: 'Helicopter', word: 'Helicopter', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🚁', ja: 'ヘリコプター', translation: '「Helicopter」は ヘリコプター' },
+            { letter: 'Police car', name: 'Police car', speechText: 'Police car', word: 'Police car', hex: '#F3F4F6', textHex: '#073B4C', emoji: '🚓', ja: 'パトカー', translation: '「Police car」は パトカー' },
+            { letter: 'Fire engine', name: 'Fire engine', speechText: 'Fire engine', word: 'Fire engine', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🚒', ja: '<ruby>消防車<rt>しょうぼうしゃ</rt></ruby>', translation: '「Fire engine」は <ruby>消防車<rt>しょうぼうしゃ</rt></ruby>' },
+            { letter: 'Ambulance', name: 'Ambulance', speechText: 'Ambulance', word: 'Ambulance', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🚑', ja: '<ruby>救急車<rt>きゅうきゅうしゃ</rt></ruby>', translation: '「Ambulance」は <ruby>救急車<rt>きゅうきゅうしゃ</rt></ruby>' },
+            { letter: 'Taxi', name: 'Taxi', speechText: 'Taxi', word: 'Taxi', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🚕', ja: 'タクシー', translation: '「Taxi」は タクシー' },
+            { letter: 'Truck', name: 'Truck', speechText: 'Truck', word: 'Truck', hex: '#FEF3C7', textHex: '#073B4C', emoji: '🚚', ja: 'トラック', translation: '「Truck」は トラック' },
+            { letter: 'Motorcycle', name: 'Motorcycle', speechText: 'Motorcycle', word: 'Motorcycle', hex: '#ECFEFF', textHex: '#073B4C', emoji: '🏍️', ja: 'バイク', translation: '「Motorcycle」は バイク' },
+            { letter: 'Scooter', name: 'Scooter', speechText: 'Scooter', word: 'Scooter', hex: '#FDF2F8', textHex: '#073B4C', emoji: '🛵', ja: 'スクーター', translation: '「Scooter」は スクーター' },
+            { letter: 'Yacht', name: 'Yacht', speechText: 'Yacht', word: 'Yacht', hex: '#E0F2FE', textHex: '#073B4C', emoji: '⛵', ja: 'ヨット', translation: '「Yacht」は ヨット' },
+            { letter: 'Submarine', name: 'Submarine', speechText: 'Submarine', word: 'Submarine', hex: '#CFFAFE', textHex: '#073B4C', emoji: '⚓', ja: '<ruby>潜水艦<rt>せんすいかん</rt></ruby>', translation: '「Submarine」は <ruby>潜水艦<rt>せんすいかん</rt></ruby>' },
+            { letter: 'Tractor', name: 'Tractor', speechText: 'Tractor', word: 'Tractor', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🚜', ja: 'トラクター', translation: '「Tractor」は トラクター' },
+            { letter: 'Cable car', name: 'Cable car', speechText: 'Cable car', word: 'Cable car', hex: '#FFFBEB', textHex: '#073B4C', emoji: '🚡', ja: 'ロープウェイ', translation: '「Cable car」は ロープウェイ' }
+        ];
+
+        // Stationery Dataset
+        const STATIONERY_DATA = [
+            { letter: 'Pencil', name: 'Pencil', speechText: 'Pencil', word: 'Pencil', hex: '#FEF3C7', textHex: '#073B4C', emoji: '✏️', ja: '<ruby>鉛筆<rt>えんぴつ</rt></ruby>', translation: '「Pencil」は <ruby>鉛筆<rt>えんぴつ</rt></ruby>' },
+            { letter: 'Eraser', name: 'Eraser', speechText: 'Eraser', word: 'Eraser', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🧹', ja: 'けしゴム', translation: '「Eraser」は けしゴム' },
+            { letter: 'Ruler', name: 'Ruler', speechText: 'Ruler', word: 'Ruler', hex: '#DCFCE7', textHex: '#073B4C', emoji: '📏', ja: '<ruby>定規<rt>じょうぎ</rt></ruby>', translation: '「Ruler」は <ruby>定規<rt>じょうぎ</rt></ruby>' },
+            { letter: 'Notebook', name: 'Notebook', speechText: 'Notebook', word: 'Notebook', hex: '#FEF08A', textHex: '#073B4C', emoji: '📓', ja: 'ノート', translation: '「Notebook」は ノート' },
+            { letter: 'Pencil case', name: 'Pencil case', speechText: 'Pencil case', word: 'Pencil case', hex: '#FDF2F8', textHex: '#073B4C', emoji: '👝', ja: 'ふでばこ', translation: '「Pencil case」は ふでばこ' },
+            { letter: 'Glue', name: 'Glue', speechText: 'Glue', word: 'Glue', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🧴', ja: 'のり', translation: '「Glue」は のり' },
+            { letter: 'Scissors', name: 'Scissors', speechText: 'Scissors', word: 'Scissors', hex: '#FEF2F2', textHex: '#073B4C', emoji: '✂️', ja: 'はさみ', translation: '「Scissors」は はさみ' },
+            { letter: 'Pencil sharpener', name: 'Pencil sharpener', speechText: 'Pencil sharpener', word: 'Pencil sharpener', hex: '#FAF5FF', textHex: '#073B4C', emoji: '⚙', ja: 'えんぴつけずり', translation: '「Pencil sharpener」は えんぴつけずり' },
+            { letter: 'Stapler', name: 'Stapler', speechText: 'Stapler', word: 'Stapler', hex: '#F0FDFA', textHex: '#073B4C', emoji: '📎', ja: 'ホッチキス', translation: '「Stapler」は ホッチキス' },
+            { letter: 'Tape', name: 'Tape', speechText: 'Tape', word: 'Tape', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🎞️', ja: 'テープ', translation: '「Tape」は テープ' },
+            { letter: 'Crayon', name: 'Crayon', speechText: 'Crayon', word: 'Crayon', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🖍️', ja: 'クレヨン', translation: '「Crayon」は クレヨン' },
+            { letter: 'Marker', name: 'Marker', speechText: 'Marker', word: 'Marker', hex: '#ECFEFF', textHex: '#073B4C', emoji: '🖊️', ja: 'マーカー', translation: '「Marker」は マーカー' },
+            { letter: 'Highlighter', name: 'Highlighter', speechText: 'Highlighter', word: 'Highlighter', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🖊', ja: '<ruby>蛍光<rt>けいこう</rt></ruby>ペン', translation: '「Highlighter」は <ruby>蛍光<rt>けいこう</rt></ruby>ペン' },
+            { letter: 'Clip', name: 'Clip', speechText: 'Clip', word: 'Clip', hex: '#F5F5F4', textHex: '#073B4C', emoji: '📎', ja: 'クリップ', translation: '「Clip」は クリップ' },
+            { letter: 'Compass', name: 'Compass', speechText: 'Compass', word: 'Compass', hex: '#CFFAFE', textHex: '#073B4C', emoji: '📐', ja: 'コンパス', translation: '「Compass」は コンパス' },
+            { letter: 'Folder', name: 'Folder', speechText: 'Folder', word: 'Folder', hex: '#FFFBEB', textHex: '#073B4C', emoji: '📁', ja: 'ファイル', translation: '「Folder」は ファイル' },
+            { letter: 'Paper', name: 'Paper', speechText: 'Paper', word: 'Paper', hex: '#F3F4F6', textHex: '#073B4C', emoji: '📄', ja: '<ruby>紙<rt>かみ</rt></ruby>', translation: '「Paper」は <ruby>紙<rt>かみ</rt></ruby>' },
+            { letter: 'Backpack', name: 'Backpack', speechText: 'Backpack', word: 'Backpack', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🎒', ja: 'リュック', translation: '「Backpack」は リュック' },
+            { letter: 'Calculator', name: 'Calculator', speechText: 'Calculator', word: 'Calculator', hex: '#F0FDF4', textHex: '#073B4C', emoji: '🧮', ja: '<ruby>電卓<rt>でんたく</rt></ruby>', translation: '「Calculator」は <ruby>電卓<rt>でんたく</rt></ruby>' },
+            { letter: 'Paintbrush', name: 'Paintbrush', speechText: 'Paintbrush', word: 'Paintbrush', hex: '#FCE7F3', textHex: '#073B4C', emoji: '🖌', ja: '<ruby>絵<rt>え</rt></ruby>のぐふで', translation: '「Paintbrush」は <ruby>絵<rt>え</rt></ruby>のぐふで' }
+        ];
+
+        // School Subject Dataset
+        const SUBJECT_DATA = [
+            { letter: 'English', name: 'English', speechText: 'English', word: 'English', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🔤', ja: '<ruby>英語<rt>えいご</rt></ruby>', translation: '「English」は <ruby>英語<rt>えいご</rt></ruby>' },
+            { letter: 'Math', name: 'Math', speechText: 'Math', word: 'Math', hex: '#FEF2F2', textHex: '#073B4C', emoji: '🔢', ja: '<ruby>算数<rt>さんすう</rt></ruby>', translation: '「Math」は <ruby>算数<rt>さんすう</rt></ruby>' },
+            { letter: 'Science', name: 'Science', speechText: 'Science', word: 'Science', hex: '#F0FDF4', textHex: '#073B4C', emoji: '🔬', ja: '<ruby>理科<rt>りか</rt></ruby>', translation: '「Science」は <ruby>理科<rt>りか</rt></ruby>' },
+            { letter: 'Music', name: 'Music', speechText: 'Music', word: 'Music', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🎵', ja: '<ruby>音楽<rt>おんがく</rt></ruby>', translation: '「Music」は <ruby>音楽<rt>おんがく</rt></ruby>' },
+            { letter: 'Art', name: 'Art', speechText: 'Art', word: 'Art', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🎨', ja: '<ruby>図工<rt>ずこう</rt></ruby>', translation: '「Art」は <ruby>図工<rt>ずこう</rt></ruby>' },
+            { letter: 'P.E.', name: 'P.E.', speechText: 'P.E.', word: 'P.E.', hex: '#DCFCE7', textHex: '#073B4C', emoji: '⚽', ja: '<ruby>体育<rt>たいいく</rt></ruby>', translation: '「P.E.」は <ruby>体育<rt>たいいく</rt></ruby>' },
+            { letter: 'Japanese', name: 'Japanese', speechText: 'Japanese', word: 'Japanese', hex: '#FEF3C7', textHex: '#073B4C', emoji: '📖', ja: '<ruby>国語<rt>こくご</rt></ruby>', translation: '「Japanese」は <ruby>国語<rt>こくご</rt></ruby>' },
+            { letter: 'Social studies', name: 'Social studies', speechText: 'Social studies', word: 'Social studies', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🌍', ja: '<ruby>社会<rt>しゃかい</rt></ruby>', translation: '「Social studies」は <ruby>社会<rt>しゃかい</rt></ruby>' },
+            { letter: 'History', name: 'History', speechText: 'History', word: 'History', hex: '#FEF08A', textHex: '#073B4C', emoji: '📜', ja: '<ruby>歴史<rt>れきし</rt></ruby>', translation: '「History」は <ruby>歴史<rt>れきし</rt></ruby>' },
+            { letter: 'Geography', name: 'Geography', speechText: 'Geography', word: 'Geography', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🗺️', ja: '<ruby>地理<rt>ちり</rt></ruby>', translation: '「Geography」は <ruby>地理<rt>ちり</rt></ruby>' },
+            { letter: 'Home economics', name: 'Home economics', speechText: 'Home economics', word: 'Home economics', hex: '#FDF2F8', textHex: '#073B4C', emoji: '🧵', ja: '<ruby>家庭科<rt>かていか</rt></ruby>', translation: '「Home economics」は <ruby>家庭科<rt>かていか</rt></ruby>' },
+            { letter: 'Moral education', name: 'Moral education', speechText: 'Moral education', word: 'Moral education', hex: '#FEF9C3', textHex: '#073B4C', emoji: '🕊️', ja: '<ruby>道徳<rt>どうとく</rt></ruby>', translation: '「Moral education」は <ruby>道徳<rt>どうとく</rt></ruby>' },
+            { letter: 'Information technology', name: 'Information technology', speechText: 'Information technology', word: 'Information technology', hex: '#ECFEFF', textHex: '#073B4C', emoji: '💻', ja: '<ruby>情報<rt>じょうほう</rt></ruby>', translation: '「Information technology」は <ruby>情報<rt>じょうほう</rt></ruby>' },
+            { letter: 'Biology', name: 'Biology', speechText: 'Biology', word: 'Biology', hex: '#F0FDFA', textHex: '#073B4C', emoji: '🌱', ja: '<ruby>生物<rt>せいぶつ</rt></ruby>', translation: '「Biology」は <ruby>生物<rt>せいぶつ</rt></ruby>' },
+            { letter: 'Chemistry', name: 'Chemistry', speechText: 'Chemistry', word: 'Chemistry', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🧪', ja: '<ruby>化学<rt>かがく</rt></ruby>', translation: '「Chemistry」は <ruby>化学<rt>かがく</rt></ruby>' }
+        ];
+
+        const BUTTON_COLORS = [
+            'bg-amber-100 hover:bg-amber-200 text-popDarkBlue',
+            'bg-rose-100 hover:bg-rose-200 text-popDarkBlue',
+            'bg-emerald-100 hover:bg-emerald-200 text-popDarkBlue',
+            'bg-sky-100 hover:bg-sky-200 text-popDarkBlue',
+            'bg-purple-100 hover:bg-purple-200 text-popDarkBlue'
+        ];
+
+        // Global States
+        let score = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let currentTarget = null;
+        let gameMode = '4choice'; // '4choice', 'all', 'cards'
+        let letterCase = 'upper';
+        let speechRate = 1.0;
+        let isProcessingChoice = false;
+
+        // Timer States
+        let timerMode = 180; // 180, 300, 'unlimited'
+        let timerInterval = null;
+        let timeLeft = 180;
+        let isGameOver = false;
+
+        // Available targets pool
+        let availableTargets = [];
+
+        // Total Cumulative Points Storage
+        let totalPoints = parseInt(localStorage.getItem('alphabet_total_points') || '0', 10);
+
+        // Progress Tracking Sets
+        let upperCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_upper_correct') || '[]'));
+        let lowerCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_lower_correct') || '[]'));
+        let mixCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_mix_correct') || '[]'));
+        let colorCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_color_correct') || '[]'));
+        let animalCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_animal_correct') || '[]'));
+        let numberCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_number_correct') || '[]'));
+        let dayCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_day_correct') || '[]'));
+        let monthCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_month_correct') || '[]'));
+        let dailyCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_daily_correct') || '[]'));
+        let vegfruitCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_vegfruit_correct') || '[]'));
+        let dishCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_dish_correct') || '[]'));
+        let sportsCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_sports_correct') || '[]'));
+        let buildingCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_building_correct') || '[]'));
+        let verbCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_verb_correct') || '[]'));
+        let adjectiveCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_adjective_correct') || '[]'));
+        let countryCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_country_correct') || '[]'));
+        let vehicleCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_vehicle_correct') || '[]'));
+        let stationeryCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_stationery_correct') || '[]'));
+        let subjectCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_subject_correct') || '[]'));
+
+        // Lock & Unlock Management
+        let unlockedModes = JSON.parse(localStorage.getItem('alphabet_unlocked_modes') || '["upper", "lower"]');
+        if (!Array.isArray(unlockedModes) || unlockedModes.length === 0) {
+            unlockedModes = ['upper', 'lower'];
+        }
+
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playCorrectSound() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(659.25, now);
+                osc.frequency.setValueAtTime(987.77, now + 0.15);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.6);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function playIncorrectSound() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.setValueAtTime(140, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function speakText(text, lang = 'en-US', onEndCallback = null) {
+            if (!('speechSynthesis' in window)) {
+                if (onEndCallback) onEndCallback();
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = speechRate;
+            utterance.pitch = 1.0;
+
+            const voices = window.speechSynthesis.getVoices();
+            const enVoice = voices.find(v => v.lang.startsWith('en') || v.lang.includes('US') || v.lang.includes('GB'));
+            if (enVoice) {
+                utterance.voice = enVoice;
+            }
+
+            let isCalled = false;
+            const safeEnd = () => {
+                if (!isCalled) {
+                    isCalled = true;
+                    clearTimeout(safetyTimer);
+                    if (onEndCallback) onEndCallback();
+                }
+            };
+
+            const safetyTimer = setTimeout(safeEnd, 3500);
+
+            utterance.onend = () => { safeEnd(); };
+            utterance.onerror = () => { safeEnd(); };
+
+            try {
+                window.speechSynthesis.speak(utterance);
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
+                }
+            } catch (e) {
+                safeEnd();
+            }
+        }
+
+        function setTimeMode(mode) {
+            timerMode = mode;
+            const btn180 = document.getElementById('time-180');
+            const btn300 = document.getElementById('time-300');
+            const btnUnlimited = document.getElementById('time-unlimited');
+
+            if (btn180) btn180.className = mode === 180 ? 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popPurple text-white border-2 border-popDarkBlue shadow-sm' : 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80';
+            if (btn300) btn300.className = mode === 300 ? 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popPurple text-white border-2 border-popDarkBlue shadow-sm' : 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80';
+            if (btnUnlimited) btnUnlimited.className = mode === 'unlimited' ? 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popPurple text-white border-2 border-popDarkBlue shadow-sm' : 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80';
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            const timerDisplay = document.getElementById('timer-display');
+            const timerIcon = document.getElementById('timer-icon');
+
+            if (timerMode === 'unlimited') {
+                if (timerDisplay) timerDisplay.innerText = '∞';
+                if (timerIcon) timerIcon.className = 'fa-solid fa-infinity text-popBlue text-lg md:text-2xl';
+                return;
+            }
+
+            if (timerIcon) timerIcon.className = 'fa-solid fa-clock text-popBlue text-lg md:text-2xl';
+            timeLeft = timerMode;
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    triggerTimeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerDisplay = document.getElementById('timer-display');
+            if (!timerDisplay) return;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function triggerTimeUp() {
+            isGameOver = true;
+
+            const finalScore = document.getElementById('final-score');
+            const finalStreak = document.getElementById('final-streak');
+            if (finalScore) finalScore.innerText = score;
+            if (finalStreak) finalStreak.innerText = maxStreak;
+
+            const modal = document.getElementById('game-over-modal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function getCurrentDataset() {
+            switch (letterCase) {
+                case 'upper':
+                    return ALPHABET_DATA.map(item => ({ ...item, letter: item.letter.toUpperCase() }));
+                case 'lower':
+                    return ALPHABET_DATA.map(item => ({ ...item, letter: item.letter.toLowerCase() }));
+                case 'mix':
+                    return ALPHABET_DATA.map((item, index) => {
+                        const useUpper = (index % 2 === 0);
+                        return {
+                            ...item,
+                            letter: useUpper ? item.letter.toUpperCase() : item.letter.toLowerCase()
+                        };
+                    });
+                case 'color':
+                    return COLOR_DATA;
+                case 'animal':
+                    return ANIMAL_DATA;
+                case 'number':
+                    const isL1Cleared = NUMBER_DATA.every(item => numberCorrectSet.has(item.letter));
+                    return isL1Cleared ? [...NUMBER_DATA, ...NUMBER_ADVANCED_DATA] : NUMBER_DATA;
+                case 'day':
+                    return DAYS_DATA;
+                case 'month':
+                    return MONTHS_DATA;
+                case 'daily':
+                    return DAILY_DATA;
+                case 'vegfruit':
+                    return VEGFRUIT_DATA;
+                case 'dish':
+                    return DISH_DATA;
+                case 'sports':
+                    return SPORTS_DATA;
+                case 'building':
+                    return BUILDING_DATA;
+                case 'verb':
+                    return VERB_DATA;
+                case 'adjective':
+                    return ADJECTIVE_DATA;
+                case 'country':
+                    return COUNTRY_DATA;
+                case 'vehicle':
+                    return VEHICLE_DATA;
+                case 'stationery':
+                    return STATIONERY_DATA;
+                case 'subject':
+                    return SUBJECT_DATA;
+                default:
+                    return ALPHABET_DATA;
+            }
+        }
+
+        function getNextTarget() {
+            const dataset = getCurrentDataset();
+            if (availableTargets.length === 0) {
+                availableTargets = [...dataset];
+                for (let i = availableTargets.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [availableTargets[i], availableTargets[j]] = [availableTargets[j], availableTargets[i]];
+                }
+            }
+            return availableTargets.pop();
+        }
+
+        function nextQuestion() {
+            if (isGameOver) return;
+            isProcessingChoice = false;
+
+            const hintBubble = document.getElementById('hint-bubble');
+            if (hintBubble) hintBubble.classList.add('hidden');
+
+            currentTarget = getNextTarget();
+
+            if (gameMode === '4choice') {
+                render4ChoiceMode();
+            } else if (gameMode === 'all') {
+                renderAllGridMode();
+            }
+
+            setTimeout(() => {
+                playCurrentTargetSound();
+            }, 300);
+        }
+
+        function playCurrentTargetSound() {
+            if (!currentTarget) return;
+            const textToSpeak = currentTarget.speechText || currentTarget.name || currentTarget.letter;
+            speakText(textToSpeak, 'en-US');
+        }
+
+        function handleChoiceSelect(selectedItem, buttonEl) {
+            if (isProcessingChoice || isGameOver) return;
+            isProcessingChoice = true;
+
+            if (selectedItem.letter === currentTarget.letter) {
+                score += 100;
+                streak += 1;
+                if (streak > maxStreak) maxStreak = streak;
+
+                totalPoints += 100;
+                localStorage.setItem('alphabet_total_points', totalPoints.toString());
+                updateTotalPointsDisplay();
+
+                // Progression tracking
+                if (letterCase === 'upper') {
+                    upperCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_upper_correct', JSON.stringify([...upperCorrectSet]));
+                } else if (letterCase === 'lower') {
+                    lowerCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_lower_correct', JSON.stringify([...lowerCorrectSet]));
+                } else if (letterCase === 'mix') {
+                    mixCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_mix_correct', JSON.stringify([...mixCorrectSet]));
+                } else if (letterCase === 'color') {
+                    colorCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_color_correct', JSON.stringify([...colorCorrectSet]));
+                } else if (letterCase === 'animal') {
+                    animalCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_animal_correct', JSON.stringify([...animalCorrectSet]));
+                } else if (letterCase === 'number') {
+                    numberCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_number_correct', JSON.stringify([...numberCorrectSet]));
+                } else if (letterCase === 'day') {
+                    dayCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_day_correct', JSON.stringify([...dayCorrectSet]));
+                } else if (letterCase === 'month') {
+                    monthCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_month_correct', JSON.stringify([...monthCorrectSet]));
+                } else if (letterCase === 'daily') {
+                    dailyCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_daily_correct', JSON.stringify([...dailyCorrectSet]));
+                } else if (letterCase === 'vegfruit') {
+                    vegfruitCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_vegfruit_correct', JSON.stringify([...vegfruitCorrectSet]));
+                } else if (letterCase === 'dish') {
+                    dishCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_dish_correct', JSON.stringify([...dishCorrectSet]));
+                } else if (letterCase === 'sports') {
+                    sportsCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_sports_correct', JSON.stringify([...sportsCorrectSet]));
+                } else if (letterCase === 'building') {
+                    buildingCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_building_correct', JSON.stringify([...buildingCorrectSet]));
+                } else if (letterCase === 'verb') {
+                    verbCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_verb_correct', JSON.stringify([...verbCorrectSet]));
+                } else if (letterCase === 'adjective') {
+                    adjectiveCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_adjective_correct', JSON.stringify([...adjectiveCorrectSet]));
+                } else if (letterCase === 'country') {
+                    countryCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_country_correct', JSON.stringify([...countryCorrectSet]));
+                } else if (letterCase === 'vehicle') {
+                    vehicleCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_vehicle_correct', JSON.stringify([...vehicleCorrectSet]));
+                } else if (letterCase === 'stationery') {
+                    stationeryCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_stationery_correct', JSON.stringify([...stationeryCorrectSet]));
+                } else if (letterCase === 'subject') {
+                    subjectCorrectSet.add(currentTarget.letter);
+                    localStorage.setItem('alphabet_subject_correct', JSON.stringify([...subjectCorrectSet]));
+                }
+
+                updateClearStatusUI();
+                checkRandomUnlock();
+                updateScoreDisplay();
+                playCorrectSound();
+                triggerConfetti();
+
+                const hintEmoji = document.getElementById('hint-emoji');
+                const hintWord = document.getElementById('hint-word');
+                const hintText = document.getElementById('hint-text');
+                const hintBubble = document.getElementById('hint-bubble');
+
+                const categoryModes = ['color', 'animal', 'number', 'day', 'month', 'daily', 'vegfruit', 'dish', 'sports', 'building', 'verb', 'adjective', 'country', 'vehicle', 'stationery', 'subject'];
+                const isCategoryMode = categoryModes.includes(letterCase);
+                const speechMsg = isCategoryMode ? `${currentTarget.name}!` : `${currentTarget.letter} is for ${currentTarget.word}`;
+
+                if (hintEmoji) hintEmoji.innerText = currentTarget.emoji;
+                if (hintWord) hintWord.innerText = isCategoryMode ? (currentTarget.name || currentTarget.letter) : `${currentTarget.letter} is for ${currentTarget.word}`;
+                if (hintText) hintText.innerHTML = `${currentTarget.translation}`;
+                if (hintBubble) hintBubble.classList.remove('hidden');
+
+                showFeedbackModal(true, `<ruby>正解<rt>せいかい</rt></ruby>！`, isCategoryMode ? `${currentTarget.name || currentTarget.letter} ${currentTarget.emoji}` : `${currentTarget.word} ${currentTarget.emoji}`);
+
+                setTimeout(() => {
+                    speakText(speechMsg, 'en-US', () => {
+                        setTimeout(() => {
+                            hideFeedbackModal();
+                            if (!isGameOver) {
+                                nextQuestion();
+                            }
+                        }, 600);
+                    });
+                }, 400);
+
+            } else {
+                streak = 0;
+                updateScoreDisplay();
+                playIncorrectSound();
+
+                if (buttonEl) {
+                    buttonEl.classList.add('animate-shake');
+                    setTimeout(() => buttonEl.classList.remove('animate-shake'), 400);
+                }
+
+                showFeedbackModal(false, 'ざんねん！', 'もういちど きいてみよう！');
+                setTimeout(() => {
+                    hideFeedbackModal();
+                    isProcessingChoice = false;
+                }, 1000);
+            }
+        }
+
+        function render4ChoiceMode() {
+            const grid = document.getElementById('choices-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            const dataset = getCurrentDataset();
+            const distractors = dataset.filter(item => item.letter !== currentTarget.letter);
+            for (let i = distractors.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [distractors[i], distractors[j]] = [distractors[j], distractors[i]];
+            }
+            const choices = [currentTarget, ...distractors.slice(0, 3)];
+            for (let i = choices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [choices[i], choices[j]] = [choices[j], choices[i]];
+            }
+
+            choices.forEach((item, idx) => {
+                const btn = document.createElement('button');
+                const colorStyle = BUTTON_COLORS[idx % BUTTON_COLORS.length];
+                btn.className = `btn-push card-shadow border-4 border-popDarkBlue rounded-3xl p-4 md:p-6 flex flex-col items-center justify-center min-h-[120px] md:min-h-[150px] transition-all transform hover:scale-105 active:scale-95 ${colorStyle}`;
+
+                if (letterCase === 'color') {
+                    btn.style.backgroundColor = item.hex || '#ffffff';
+                    btn.style.color = item.textHex || '#073B4C';
+                    btn.innerHTML = `
+                        <span class="font-alphabet text-2xl md:text-4xl font-black mb-1">${item.name || item.letter}</span>
+                        <span class="text-sm md:text-base font-bold">${item.ja || ''}</span>
+                    `;
+                } else if (['animal', 'number', 'day', 'month', 'daily', 'vegfruit', 'dish', 'sports', 'building', 'verb', 'adjective', 'country', 'vehicle', 'stationery', 'subject'].includes(letterCase)) {
+                    btn.innerHTML = `
+                        <span class="text-3xl md:text-5xl mb-1">${item.emoji || ''}</span>
+                        <span class="font-alphabet text-lg md:text-2xl font-black leading-tight">${item.name || item.letter}</span>
+                        <span class="text-xs md:text-sm font-bold opacity-90 mt-1">${item.ja || ''}</span>
+                    `;
+                } else {
+                    btn.innerHTML = `
+                        <span class="font-alphabet text-5xl md:text-7xl font-black">${item.letter}</span>
+                    `;
+                }
+
+                btn.onclick = () => handleChoiceSelect(item, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function renderAllGridMode() {
+            const grid = document.getElementById('all-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            const dataset = getCurrentDataset();
+
+            dataset.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-push border-3 border-popDarkBlue rounded-2xl p-2 md:p-3 flex flex-col items-center justify-center bg-white hover:bg-yellow-100 transition-all font-alphabet text-xl md:text-3xl font-black text-popDarkBlue card-shadow';
+
+                if (letterCase === 'color') {
+                    btn.style.backgroundColor = item.hex || '#ffffff';
+                    btn.style.color = item.textHex || '#073B4C';
+                    btn.innerHTML = `
+                        <span class="text-sm md:text-base font-black truncate max-w-full">${item.name || item.letter}</span>
+                        <span class="text-[10px] md:text-xs font-bold truncate max-w-full">${item.ja || ''}</span>
+                    `;
+                } else if (['animal', 'number', 'day', 'month', 'daily', 'vegfruit', 'dish', 'sports', 'building', 'verb', 'adjective', 'country', 'vehicle', 'stationery', 'subject'].includes(letterCase)) {
+                    btn.innerHTML = `
+                        <span class="text-xl md:text-2xl">${item.emoji || ''}</span>
+                        <span class="text-xs md:text-sm font-black truncate max-w-full">${item.name || item.letter}</span>
+                        <span class="text-[10px] md:text-xs font-bold opacity-90 truncate max-w-full">${item.ja || ''}</span>
+                    `;
+                } else {
+                    btn.innerHTML = `<span>${item.letter}</span>`;
+                }
+
+                btn.onclick = () => handleChoiceSelect(item, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function startGame() {
+            document.getElementById('start-screen')?.classList.add('hidden');
+            document.getElementById('game-screen')?.classList.remove('hidden');
+            document.getElementById('status-badges')?.classList.remove('hidden');
+
+            restartGame();
+        }
+
+        function openCardsModeDirectly() {
+            gameMode = 'cards';
+            updateModeButtonsUI();
+            startGame();
+        }
+
+        function goToStartScreen() {
+            clearInterval(timerInterval);
+            window.speechSynthesis?.cancel();
+
+            document.getElementById('game-over-modal')?.classList.add('hidden');
+            document.getElementById('game-screen')?.classList.add('hidden');
+            document.getElementById('status-badges')?.classList.add('hidden');
+            document.getElementById('start-screen')?.classList.remove('hidden');
+
+            updateTotalPointsDisplay();
+            updateClearStatusUI();
+        }
+
+        function restartGame() {
+            isGameOver = false;
+            isProcessingChoice = false;
+            score = 0;
+            streak = 0;
+            maxStreak = 0;
+            availableTargets = [];
+            updateScoreDisplay();
+
+            document.getElementById('game-over-modal')?.classList.add('hidden');
+            startTimer();
+
+            if (gameMode === 'cards') {
+                document.getElementById('quiz-container')?.classList.add('hidden');
+                document.getElementById('cards-container')?.classList.remove('hidden');
+                renderCardsMode();
+            } else {
+                document.getElementById('quiz-container')?.classList.remove('hidden');
+                document.getElementById('cards-container')?.classList.add('hidden');
+
+                if (gameMode === '4choice') {
+                    document.getElementById('choices-grid')?.classList.remove('hidden');
+                    document.getElementById('all-grid')?.classList.add('hidden');
+                } else {
+                    document.getElementById('choices-grid')?.classList.add('hidden');
+                    document.getElementById('all-grid')?.classList.remove('hidden');
+                }
+                nextQuestion();
+            }
+        }
+
+        function setGameMode(mode) {
+            const isMixCleared = mixCorrectSet.size >= 26;
+
+            if (mode === 'all' && !isMixCleared) {
+                playIncorrectSound();
+                showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', '4<ruby>択<rt>たく</rt></ruby>クイズの「ミックス」で全問クリアしてね！');
+                setTimeout(() => {
+                    hideFeedbackModal();
+                }, 2000);
+                return;
+            }
+
+            gameMode = mode;
+            updateModeButtonsUI();
+        }
+
+        function updateModeButtonsUI() {
+            const isMixCleared = mixCorrectSet.size >= 26;
+
+            const btn4Choice = document.getElementById('mode-4choice');
+            if (btn4Choice) {
+                btn4Choice.className = gameMode === '4choice' ? 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popYellow border-2 border-popDarkBlue shadow-sm text-popDarkBlue' : 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80';
+            }
+
+            const btnAll = document.getElementById('mode-all');
+            const lockIcon = document.getElementById('all-lock-icon');
+
+            if (btnAll) {
+                if (!isMixCleared) {
+                    if (lockIcon) lockIcon.classList.remove('hidden');
+                    btnAll.className = gameMode === 'all'
+                        ? 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popYellow border-2 border-popDarkBlue shadow-sm text-popDarkBlue opacity-70'
+                        : 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-gray-500 bg-gray-200/80 border-2 border-gray-400 opacity-80 cursor-not-allowed';
+                } else {
+                    if (lockIcon) lockIcon.classList.add('hidden');
+                    btnAll.className = gameMode === 'all' 
+                        ? 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popYellow border-2 border-popDarkBlue shadow-sm text-popDarkBlue' 
+                        : 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80';
+                }
+            }
+
+            const btnCards = document.getElementById('mode-cards');
+            if (btnCards) {
+                btnCards.className = gameMode === 'cards' ? 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popYellow border-2 border-popDarkBlue shadow-sm text-popDarkBlue' : 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80';
+            }
+        }
+
+        function setLetterCase(mode) {
+            if (!unlockedModes.includes(mode)) {
+                playIncorrectSound();
+                showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', '今あそべるゲームを ぜんぶクリアしてね！');
+                setTimeout(() => {
+                    hideFeedbackModal();
+                }, 2000);
+                return;
+            }
+
+            letterCase = mode;
+            availableTargets = [];
+            updateCaseButtonsUI();
+        }
+
+        function updateCaseButtonsUI() {
+            const isNumberL1Cleared = NUMBER_DATA.every(item => numberCorrectSet.has(item.letter));
+            const totalNumberCount = isNumberL1Cleared ? (NUMBER_DATA.length + NUMBER_ADVANCED_DATA.length) : NUMBER_DATA.length;
+
+            const caseModes = [
+                { id: 'upper', mode: 'upper', label: 'アルファベット <ruby>大文字<rt>おおもじ</rt></ruby>', count: upperCorrectSet.size, total: 26 },
+                { id: 'lower', mode: 'lower', label: 'アルファベット <ruby>小文字<rt>こもじ</rt></ruby>', count: lowerCorrectSet.size, total: 26 },
+                { id: 'mix', mode: 'mix', label: '<ruby>大文字<rt>おおもじ</rt></ruby>と<ruby>小文字<rt>こもじ</rt></ruby> ミックス', count: mixCorrectSet.size, total: 26 },
+                { id: 'color', mode: 'color', label: '🎨 <ruby>色<rt>いろ</rt></ruby>', count: colorCorrectSet.size, total: COLOR_DATA.length },
+                { id: 'animal', mode: 'animal', label: '🐶 <ruby>動物<rt>どうぶつ</rt></ruby>', count: animalCorrectSet.size, total: ANIMAL_DATA.length },
+                { id: 'number', mode: 'number', label: '🔢 <ruby>数<rt>かず</rt></ruby>', count: numberCorrectSet.size, total: totalNumberCount },
+                { id: 'day', mode: 'day', label: '📅 <ruby>曜日<rt>ようび</rt></ruby>', count: dayCorrectSet.size, total: DAYS_DATA.length },
+                { id: 'month', mode: 'month', label: '🗓️ 1<ruby>月<rt>がつ</rt></ruby>～12<ruby>月<rt>がつ</rt></ruby>', count: monthCorrectSet.size, total: MONTHS_DATA.length },
+                { id: 'daily', mode: 'daily', label: '🏠 <ruby>日用品<rt>にちようひん</rt></ruby>', count: dailyCorrectSet.size, total: DAILY_DATA.length },
+                { id: 'vegfruit', mode: 'vegfruit', label: '🥦 <ruby>野菜<rt>やさい</rt></ruby>・くだもの', count: vegfruitCorrectSet.size, total: VEGFRUIT_DATA.length },
+                { id: 'dish', mode: 'dish', label: '🍳 <ruby>料理名<rt>りょうりめい</rt></ruby>', count: dishCorrectSet.size, total: DISH_DATA.length },
+                { id: 'sports', mode: 'sports', label: '⚽ スポーツ', count: sportsCorrectSet.size, total: SPORTS_DATA.length },
+                { id: 'building', mode: 'building', label: '🏢 <ruby>施設<rt>しせつ</rt></ruby>・たてもの', count: buildingCorrectSet.size, total: BUILDING_DATA.length },
+                { id: 'verb', mode: 'verb', label: '🏃 <ruby>動詞<rt>どうし</rt></ruby>', count: verbCorrectSet.size, total: VERB_DATA.length },
+                { id: 'adjective', mode: 'adjective', label: '😊 <ruby>形容詞<rt>けいようし</rt></ruby>', count: adjectiveCorrectSet.size, total: ADJECTIVE_DATA.length },
+                { id: 'country', mode: 'country', label: '🌍 <ruby>国<rt>くに</rt></ruby>', count: countryCorrectSet.size, total: COUNTRY_DATA.length },
+                { id: 'vehicle', mode: 'vehicle', label: '🚗 <ruby>乗り物<rt>のりもの</rt></ruby>', count: vehicleCorrectSet.size, total: VEHICLE_DATA.length },
+                { id: 'stationery', mode: 'stationery', label: '✏️ <ruby>文房具<rt>ぶんぼうぐ</rt></ruby>', count: stationeryCorrectSet.size, total: STATIONERY_DATA.length },
+                { id: 'subject', mode: 'subject', label: '📚 <ruby>教科名<rt>きょうかめい</rt></ruby>', count: subjectCorrectSet.size, total: SUBJECT_DATA.length }
+            ];
+
+            caseModes.forEach(item => {
+                const btn = document.getElementById(`case-${item.id}`);
+                if (!btn) return;
+
+                const isUnlocked = unlockedModes.includes(item.id);
+
+                if (!isUnlocked) {
+                    btn.innerHTML = `<div class="flex flex-col items-center justify-center w-full"><div class="flex items-center gap-1">🔒 ？？？</div><span class="block text-[11px] font-bold opacity-80 mt-0.5 font-alphabet">🔒 ロック</span></div>`;
+                    btn.className = 'py-2 rounded-xl font-bold text-xs md:text-sm transition-all text-gray-500 bg-gray-200/80 border-2 border-gray-400 opacity-80 cursor-not-allowed';
+                } else {
+                    const progressText = `<span class="block text-[11px] font-bold opacity-80 mt-0.5 font-alphabet">${item.count} / ${item.total}</span>`;
+                    btn.innerHTML = `<div class="flex flex-col items-center justify-center w-full"><div>${item.label}</div>${progressText}</div>`;
+                    btn.className = letterCase === item.mode
+                        ? 'py-2 rounded-xl font-bold text-xs md:text-sm transition-all bg-popBlue text-white border-2 border-popDarkBlue shadow-sm'
+                        : 'py-2 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80';
+                }
+            });
+        }
+
+        function checkRandomUnlock() {
+            const isNumberL1Cleared = NUMBER_DATA.every(item => numberCorrectSet.has(item.letter));
+            const totalNumberCount = isNumberL1Cleared ? (NUMBER_DATA.length + NUMBER_ADVANCED_DATA.length) : NUMBER_DATA.length;
+
+            const caseModes = [
+                { id: 'upper', count: upperCorrectSet.size, total: 26 },
+                { id: 'lower', count: lowerCorrectSet.size, total: 26 },
+                { id: 'mix', count: mixCorrectSet.size, total: 26 },
+                { id: 'color', count: colorCorrectSet.size, total: COLOR_DATA.length },
+                { id: 'animal', count: animalCorrectSet.size, total: ANIMAL_DATA.length },
+                { id: 'number', count: numberCorrectSet.size, total: totalNumberCount },
+                { id: 'day', count: dayCorrectSet.size, total: DAYS_DATA.length },
+                { id: 'month', count: monthCorrectSet.size, total: MONTHS_DATA.length },
+                { id: 'daily', count: dailyCorrectSet.size, total: DAILY_DATA.length },
+                { id: 'vegfruit', count: vegfruitCorrectSet.size, total: VEGFRUIT_DATA.length },
+                { id: 'dish', count: dishCorrectSet.size, total: DISH_DATA.length },
+                { id: 'sports', count: sportsCorrectSet.size, total: SPORTS_DATA.length },
+                { id: 'building', count: buildingCorrectSet.size, total: BUILDING_DATA.length },
+                { id: 'verb', count: verbCorrectSet.size, total: VERB_DATA.length },
+                { id: 'adjective', count: adjectiveCorrectSet.size, total: ADJECTIVE_DATA.length },
+                { id: 'country', count: countryCorrectSet.size, total: COUNTRY_DATA.length },
+                { id: 'vehicle', count: vehicleCorrectSet.size, total: VEHICLE_DATA.length },
+                { id: 'stationery', count: stationeryCorrectSet.size, total: STATIONERY_DATA.length },
+                { id: 'subject', count: subjectCorrectSet.size, total: SUBJECT_DATA.length }
+            ];
+
+            const allCurrentlyUnlockedCleared = unlockedModes.every(modeId => {
+                const item = caseModes.find(m => m.id === modeId);
+                if (!item) return true;
+                return item.count >= item.total;
+            });
+
+            if (allCurrentlyUnlockedCleared) {
+                const lockedModes = caseModes.filter(m => !unlockedModes.includes(m.id));
+                if (lockedModes.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * lockedModes.length);
+                    const newlyUnlocked = lockedModes[randomIndex];
+                    unlockedModes.push(newlyUnlocked.id);
+                    localStorage.setItem('alphabet_unlocked_modes', JSON.stringify(unlockedModes));
+
+                    setTimeout(() => {
+                        showFeedbackModal(true, '🎉 ロック解除！', 'あたらしくゲームが1つ あそべるようになったよ！');
+                        setTimeout(() => {
+                            hideFeedbackModal();
+                        }, 2500);
+                    }, 800);
+
+                    updateClearStatusUI();
+                }
+            }
+        }
+
+        function updateClearStatusUI() {
+            updateCaseButtonsUI();
+            updateModeButtonsUI();
+        }
+
+        function setSpeechRate(rate) {
+            speechRate = rate;
+            const slowBtn = document.getElementById('speed-slow');
+            const normalBtn = document.getElementById('speed-normal');
+
+            if (slowBtn) slowBtn.className = rate === 0.7 ? 'px-3 py-1 rounded-full bg-popGreen text-white font-bold border border-popDarkBlue/30' : 'px-3 py-1 rounded-full text-popDarkBlue font-bold border border-popDarkBlue/30';
+            if (normalBtn) normalBtn.className = rate === 1.0 ? 'px-3 py-1 rounded-full bg-popGreen text-white font-bold border border-popDarkBlue/30' : 'px-3 py-1 rounded-full text-popDarkBlue font-bold border border-popDarkBlue/30';
+        }
+
+        let cardSpeechTimeout = null;
+        let currentCardCategoryFilter = 'all';
+
+        function filterCardsCategory(catId) {
+            currentCardCategoryFilter = catId;
+            const tabs = ['all', 'alphabet', 'color', 'animal', 'number', 'day', 'month', 'daily', 'vegfruit', 'dish', 'sports', 'building', 'verb', 'adjective', 'country', 'vehicle', 'stationery', 'subject'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`card-tab-${t}`);
+                if (btn) {
+                    if (t === catId) {
+                        btn.className = 'px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-popYellow border-2 border-popDarkBlue text-popDarkBlue shadow-sm transition-all';
+                    } else {
+                        btn.className = 'px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all';
+                    }
+                }
+            });
+            renderCardsMode();
+        }
+
+        function playCardSound(item) {
+            if (cardSpeechTimeout) {
+                clearTimeout(cardSpeechTimeout);
+                cardSpeechTimeout = null;
+            }
+
+            const textToSpeak = item.speechText || item.name || item.letter;
+            speakText(textToSpeak, 'en-US', () => {
+                if (item.word && item.word.toLowerCase() !== textToSpeak.toLowerCase()) {
+                    cardSpeechTimeout = setTimeout(() => {
+                        speakText(item.word, 'en-US');
+                    }, 700);
+                }
+            });
+        }
+
+        function renderCardsMode() {
+            const sectionsContainer = document.getElementById('cards-sections');
+            if (!sectionsContainer) return;
+            sectionsContainer.innerHTML = '';
+
+            const categories = [
+                { id: 'alphabet', title: '🔤 アルファベット', data: ALPHABET_DATA, type: 'alphabet' },
+                { id: 'color', title: '🎨 <ruby>色<rt>いろ</rt></ruby>', data: COLOR_DATA, type: 'color' },
+                { id: 'animal', title: '🐶 <ruby>動物<rt>どうぶつ</rt></ruby>', data: ANIMAL_DATA, type: 'animal' },
+                { id: 'number', title: '🔢 <ruby>数<rt>かず</rt></ruby>', data: [...NUMBER_DATA, ...NUMBER_ADVANCED_DATA], type: 'number' },
+                { id: 'day', title: '📅 <ruby>曜日<rt>ようび</rt></ruby>', data: DAYS_DATA, type: 'day' },
+                { id: 'month', title: '🗓 1<ruby>月<rt>がつ</rt></ruby>～12<ruby>月<rt>がつ</rt></ruby>', data: MONTHS_DATA, type: 'month' },
+                { id: 'daily', title: '🏠 <ruby>日用品<rt>にちようひん</rt></ruby>', data: DAILY_DATA, type: 'daily' },
+                { id: 'vegfruit', title: '🥦 <ruby>野菜<rt>やさい</rt></ruby>・くだもの', data: VEGFRUIT_DATA, type: 'vegfruit' },
+                { id: 'dish', title: '🍳 <ruby>料理名<rt>りょうりめい</rt></ruby>', data: DISH_DATA, type: 'dish' },
+                { id: 'sports', title: '⚽ スポーツ', data: SPORTS_DATA, type: 'sports' },
+                { id: 'building', title: '🏢 <ruby>施設<rt>しせつ</rt></ruby>・たてもの', data: BUILDING_DATA, type: 'building' },
+                { id: 'verb', title: '🏃 <ruby>動詞<rt>どうし</rt></ruby>', data: VERB_DATA, type: 'verb' },
+                { id: 'adjective', title: '😊 <ruby>形容詞<rt>けいようし</rt></ruby>', data: ADJECTIVE_DATA, type: 'adjective' },
+                { id: 'country', title: '🌍 <ruby>国<rt>くに</rt></ruby>', data: COUNTRY_DATA, type: 'country' },
+                { id: 'vehicle', title: '🚗 <ruby>乗り物<rt>のりもの</rt></ruby>', data: VEHICLE_DATA, type: 'vehicle' },
+                { id: 'stationery', title: '✏️ <ruby>文房具<rt>ぶんぼうぐ</rt></ruby>', data: STATIONERY_DATA, type: 'stationery' },
+                { id: 'subject', title: '📚 <ruby>教科名<rt>きょうかめい</rt></ruby>', data: SUBJECT_DATA, type: 'subject' }
+            ];
+
+            categories.forEach(cat => {
+                if (currentCardCategoryFilter !== 'all' && currentCardCategoryFilter !== cat.id) return;
+
+                const sectionEl = document.createElement('div');
+                sectionEl.className = 'bg-white/80 backdrop-blur border-3 border-popDarkBlue rounded-2xl p-3 md:p-4 shadow-sm';
+
+                const headerEl = document.createElement('div');
+                headerEl.className = 'flex items-center justify-between mb-3 border-b-2 border-popDarkBlue/20 pb-2';
+                headerEl.innerHTML = `
+                    <h3 class="text-base md:text-lg font-black text-popDarkBlue flex items-center gap-2">
+                        <span>${cat.title}</span>
+                        <span class="text-xs font-bold bg-popDarkBlue/10 text-popDarkBlue px-2.5 py-0.5 rounded-full">${cat.data.length}しゅるい</span>
+                    </h3>
+                `;
+
+                const gridEl = document.createElement('div');
+                gridEl.className = 'grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-9 gap-1.5 md:gap-2';
+
+                cat.data.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white border-2 md:border-3 border-popDarkBlue rounded-xl p-1.5 md:p-2 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0 text-center';
+                    if (item.hex) {
+                        card.style.borderTop = `6px solid ${item.hex}`;
+                    }
+
+                    if (cat.type === 'alphabet') {
+                        card.innerHTML = `
+                            <span class="font-alphabet text-xs md:text-sm font-bold text-popBlue leading-tight truncate max-w-full">${item.letter}</span>
+                            <span class="text-2xl md:text-3xl my-0.5">${item.emoji}</span>
+                            <span class="font-alphabet text-xs md:text-sm font-bold text-popDarkBlue leading-tight truncate max-w-full">${item.word}</span>
+                            <span class="text-[10px] md:text-xs text-gray-500 font-bold leading-tight truncate max-w-full">${item.translation}</span>
+                        `;
+                    } else {
+                        card.innerHTML = `
+                            <span class="font-alphabet text-xs md:text-sm font-bold text-popBlue leading-tight truncate max-w-full">${item.name || item.letter}</span>
+                            <span class="text-2xl md:text-3xl my-0.5">${item.emoji}</span>
+                            <span class="font-alphabet text-xs md:text-sm font-bold text-popDarkBlue leading-tight truncate max-w-full">${item.name || item.letter}</span>
+                            <span class="text-[10px] md:text-xs text-gray-500 font-bold leading-tight truncate max-w-full">${item.ja || ''}</span>
+                        `;
+                    }
+
+                    card.onclick = () => playCardSound(item);
+                    gridEl.appendChild(card);
+                });
+
+                sectionEl.appendChild(headerEl);
+                sectionEl.appendChild(gridEl);
+                sectionsContainer.appendChild(sectionEl);
+            });
+        }
+
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#FF6B6B', '#FFD166', '#06D6A0', '#118AB2', '#9D4EDD'];
+
+            for (let i = 0; i < 60; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height * 0.5,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: Math.random() * 4 + 2,
+                    rotation: Math.random() * 360,
+                    vRot: (Math.random() - 0.5) * 10
+                });
+            }
+
+            let frame = 0;
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.rotation += p.vRot;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+
+                frame++;
+                if (frame < 50) {
+                    requestAnimationFrame(animateConfetti);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            animateConfetti();
+        }
+
+        function showFeedbackModal(isCorrect, mainTextHtml, subText) {
+            const overlay = document.getElementById('feedback-overlay');
+            const box = document.getElementById('feedback-box');
+            const icon = document.getElementById('feedback-icon');
+            const text = document.getElementById('feedback-text');
+            const sub = document.getElementById('feedback-sub');
+
+            if (!overlay || !box) return;
+
+            if (icon) icon.innerText = isCorrect ? '⭕' : '❌';
+            if (text) text.innerHTML = mainTextHtml;
+            if (sub) sub.innerText = subText;
+
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-50');
+            box.classList.add('scale-100');
+        }
+
+        function hideFeedbackModal() {
+            const overlay = document.getElementById('feedback-overlay');
+            const box = document.getElementById('feedback-box');
+
+            if (!overlay || !box) return;
+
+            box.classList.remove('scale-100');
+            box.classList.add('scale-50');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function updateScoreDisplay() {
+            const scoreEl = document.getElementById('score-display');
+            const streakEl = document.getElementById('streak-display');
+            if (scoreEl) scoreEl.innerText = score;
+            if (streakEl) streakEl.innerText = streak;
+        }
+
+        function updateTotalPointsDisplay() {
+            const el = document.getElementById('total-points-display');
+            if (el) {
+                el.innerHTML = `${totalPoints.toLocaleString()} <span class="text-base md:text-xl text-popDarkBlue font-bold">pt</span>`;
+            }
+        }
+
+        window.onload = function() {
+            setTimeMode(180);
+            updateClearStatusUI();
+            updateTotalPointsDisplay();
+
+            window.addEventListener('resize', () => {
+                const canvas = document.getElementById('confetti-canvas');
+                if (canvas) {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+            });
+        };
+    </script>
+</body>
+</html>
