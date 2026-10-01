@@ -1233,6 +1233,10 @@
             clearInterval(timerInterval);
             window.speechSynthesis?.cancel();
 
+            if (gameMode === 'cards') {
+                setGameMode('4choice');
+            }
+
             document.getElementById('game-over-modal')?.classList.add('hidden');
             document.getElementById('game-screen')?.classList.add('hidden');
             document.getElementById('status-badges')?.classList.add('hidden');
@@ -1498,17 +1502,6 @@
 
         function filterCardsCategory(catId) {
             currentCardCategoryFilter = catId;
-            const tabs = ['all', 'alphabet', 'color', 'animal', 'number', 'day', 'month', 'daily', 'vegfruit', 'dish', 'sports', 'building', 'verb', 'adjective', 'country', 'vehicle', 'stationery', 'subject'];
-            tabs.forEach(t => {
-                const btn = document.getElementById(`card-tab-${t}`);
-                if (btn) {
-                    if (t === catId) {
-                        btn.className = 'px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-popYellow border-2 border-popDarkBlue text-popDarkBlue shadow-sm transition-all';
-                    } else {
-                        btn.className = 'px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all';
-                    }
-                }
-            });
             renderCardsMode();
         }
 
@@ -1528,32 +1521,100 @@
             });
         }
 
+        function renderCardsTabs() {
+            const tabs = [
+                { id: 'all', mode: null },
+                { id: 'alphabet', modes: ['upper', 'lower', 'mix'] },
+                { id: 'color', mode: 'color' },
+                { id: 'animal', mode: 'animal' },
+                { id: 'number', mode: 'number' },
+                { id: 'day', mode: 'day' },
+                { id: 'month', mode: 'month' },
+                { id: 'daily', mode: 'daily' },
+                { id: 'vegfruit', mode: 'vegfruit' },
+                { id: 'dish', mode: 'dish' },
+                { id: 'sports', mode: 'sports' },
+                { id: 'building', mode: 'building' },
+                { id: 'verb', mode: 'verb' },
+                { id: 'adjective', mode: 'adjective' },
+                { id: 'country', mode: 'country' },
+                { id: 'vehicle', mode: 'vehicle' },
+                { id: 'stationery', mode: 'stationery' },
+                { id: 'subject', mode: 'subject' }
+            ];
+
+            tabs.forEach(t => {
+                const btn = document.getElementById(`card-tab-${t.id}`);
+                if (!btn) return;
+
+                let isUnlocked = false;
+                if (t.id === 'all') {
+                    isUnlocked = true;
+                } else if (t.modes) {
+                    isUnlocked = t.modes.some(m => unlockedModes.includes(m));
+                } else if (t.mode) {
+                    isUnlocked = unlockedModes.includes(t.mode);
+                }
+
+                if (isUnlocked) {
+                    btn.classList.remove('hidden');
+                    if (t.id === currentCardCategoryFilter) {
+                        btn.className = 'px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-popYellow border-2 border-popDarkBlue text-popDarkBlue shadow-sm transition-all';
+                    } else {
+                        btn.className = 'px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-white hover:bg-sky-50 border-2 border-popDarkBlue text-popDarkBlue transition-all';
+                    }
+                } else {
+                    btn.classList.add('hidden');
+                }
+            });
+
+            const currentTabBtn = document.getElementById(`card-tab-${currentCardCategoryFilter}`);
+            if (currentTabBtn && currentTabBtn.classList.contains('hidden')) {
+                currentCardCategoryFilter = 'all';
+                const allBtn = document.getElementById('card-tab-all');
+                if (allBtn) allBtn.className = 'px-3.5 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-popYellow border-2 border-popDarkBlue text-popDarkBlue shadow-sm transition-all';
+            }
+        }
+
         function renderCardsMode() {
+            renderCardsTabs();
+
             const sectionsContainer = document.getElementById('cards-sections');
             if (!sectionsContainer) return;
             sectionsContainer.innerHTML = '';
 
+            const isNumberL1Cleared = NUMBER_DATA.every(item => numberCorrectSet.has(item.letter));
+            const numberDataset = isNumberL1Cleared ? [...NUMBER_DATA, ...NUMBER_ADVANCED_DATA] : NUMBER_DATA;
+
             const categories = [
-                { id: 'alphabet', title: '🔤 アルファベット', data: ALPHABET_DATA, type: 'alphabet' },
-                { id: 'color', title: '🎨 <ruby>色<rt>いろ</rt></ruby>', data: COLOR_DATA, type: 'color' },
-                { id: 'animal', title: '🐶 <ruby>動物<rt>どうぶつ</rt></ruby>', data: ANIMAL_DATA, type: 'animal' },
-                { id: 'number', title: '🔢 <ruby>数<rt>かず</rt></ruby>', data: [...NUMBER_DATA, ...NUMBER_ADVANCED_DATA], type: 'number' },
-                { id: 'day', title: '📅 <ruby>曜日<rt>ようび</rt></ruby>', data: DAYS_DATA, type: 'day' },
-                { id: 'month', title: '🗓 1<ruby>月<rt>がつ</rt></ruby>～12<ruby>月<rt>がつ</rt></ruby>', data: MONTHS_DATA, type: 'month' },
-                { id: 'daily', title: '🏠 <ruby>日用品<rt>にちようひん</rt></ruby>', data: DAILY_DATA, type: 'daily' },
-                { id: 'vegfruit', title: '🥦 <ruby>野菜<rt>やさい</rt></ruby>・くだもの', data: VEGFRUIT_DATA, type: 'vegfruit' },
-                { id: 'dish', title: '🍳 <ruby>料理名<rt>りょうりめい</rt></ruby>', data: DISH_DATA, type: 'dish' },
-                { id: 'sports', title: '⚽ スポーツ', data: SPORTS_DATA, type: 'sports' },
-                { id: 'building', title: '🏢 <ruby>施設<rt>しせつ</rt></ruby>・たてもの', data: BUILDING_DATA, type: 'building' },
-                { id: 'verb', title: '🏃 <ruby>動詞<rt>どうし</rt></ruby>', data: VERB_DATA, type: 'verb' },
-                { id: 'adjective', title: '😊 <ruby>形容詞<rt>けいようし</rt></ruby>', data: ADJECTIVE_DATA, type: 'adjective' },
-                { id: 'country', title: '🌍 <ruby>国<rt>くに</rt></ruby>', data: COUNTRY_DATA, type: 'country' },
-                { id: 'vehicle', title: '🚗 <ruby>乗り物<rt>のりもの</rt></ruby>', data: VEHICLE_DATA, type: 'vehicle' },
-                { id: 'stationery', title: '✏️ <ruby>文房具<rt>ぶんぼうぐ</rt></ruby>', data: STATIONERY_DATA, type: 'stationery' },
-                { id: 'subject', title: '📚 <ruby>教科名<rt>きょうかめい</rt></ruby>', data: SUBJECT_DATA, type: 'subject' }
+                { id: 'alphabet', title: '🔤 アルファベット', data: ALPHABET_DATA, type: 'alphabet', modes: ['upper', 'lower', 'mix'] },
+                { id: 'color', title: '🎨 <ruby>色<rt>いろ</rt></ruby>', data: COLOR_DATA, type: 'color', mode: 'color' },
+                { id: 'animal', title: '🐶 <ruby>動物<rt>どうぶつ</rt></ruby>', data: ANIMAL_DATA, type: 'animal', mode: 'animal' },
+                { id: 'number', title: '🔢 <ruby>数<rt>かず</rt></ruby>', data: numberDataset, type: 'number', mode: 'number' },
+                { id: 'day', title: '📅 <ruby>曜日<rt>ようび</rt></ruby>', data: DAYS_DATA, type: 'day', mode: 'day' },
+                { id: 'month', title: '🗓 1<ruby>月<rt>がつ</rt></ruby>～12<ruby>月<rt>がつ</rt></ruby>', data: MONTHS_DATA, type: 'month', mode: 'month' },
+                { id: 'daily', title: '🏠 <ruby>日用品<rt>にちようひん</rt></ruby>', data: DAILY_DATA, type: 'daily', mode: 'daily' },
+                { id: 'vegfruit', title: '🥦 <ruby>野菜<rt>やさい</rt></ruby>・くだもの', data: VEGFRUIT_DATA, type: 'vegfruit', mode: 'vegfruit' },
+                { id: 'dish', title: '🍳 <ruby>料理名<rt>りょうりめい</rt></ruby>', data: DISH_DATA, type: 'dish', mode: 'dish' },
+                { id: 'sports', title: '⚽ スポーツ', data: SPORTS_DATA, type: 'sports', mode: 'sports' },
+                { id: 'building', title: '🏢 <ruby>施設<rt>しせつ</rt></ruby>・たてもの', data: BUILDING_DATA, type: 'building', mode: 'building' },
+                { id: 'verb', title: '🏃 <ruby>動詞<rt>どうし</rt></ruby>', data: VERB_DATA, type: 'verb', mode: 'verb' },
+                { id: 'adjective', title: '😊 <ruby>形容詞<rt>けいようし</rt></ruby>', data: ADJECTIVE_DATA, type: 'adjective', mode: 'adjective' },
+                { id: 'country', title: '🌍 <ruby>国<rt>くに</rt></ruby>', data: COUNTRY_DATA, type: 'country', mode: 'country' },
+                { id: 'vehicle', title: '🚗 <ruby>乗り物<rt>のりもの</rt></ruby>', data: VEHICLE_DATA, type: 'vehicle', mode: 'vehicle' },
+                { id: 'stationery', title: '✏️ <ruby>文房具<rt>ぶんぼうぐ</rt></ruby>', data: STATIONERY_DATA, type: 'stationery', mode: 'stationery' },
+                { id: 'subject', title: '📚 <ruby>教科名<rt>きょうかめい</rt></ruby>', data: SUBJECT_DATA, type: 'subject', mode: 'subject' }
             ];
 
             categories.forEach(cat => {
+                let isCategoryUnlocked = false;
+                if (cat.modes) {
+                    isCategoryUnlocked = cat.modes.some(m => unlockedModes.includes(m));
+                } else if (cat.mode) {
+                    isCategoryUnlocked = unlockedModes.includes(cat.mode);
+                }
+
+                if (!isCategoryUnlocked) return;
                 if (currentCardCategoryFilter !== 'all' && currentCardCategoryFilter !== cat.id) return;
 
                 const sectionEl = document.createElement('div');
