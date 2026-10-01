@@ -164,69 +164,13 @@
                     </div>
                 </div>
 
-                <!-- Game Select Buttons -->
+                <!-- Game Select Buttons Container -->
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label class="block text-xs md:text-sm font-bold text-popDarkBlue"><i class="fa-solid fa-font mr-1 text-popGreen"></i> ゲーム セレクト</label>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-sky-100/70 p-1.5 rounded-2xl border-2 border-popDarkBlue max-h-52 overflow-y-auto">
-                        <button id="case-upper" onclick="setLetterCase('upper')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popBlue text-white border-2 border-popDarkBlue shadow-sm">
-                            アルファベット <ruby>大文字<rt>おおもじ</rt></ruby>
-                        </button>
-                        <button id="case-lower" onclick="setLetterCase('lower')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80">
-                            アルファベット <ruby>小文字<rt>こもじ</rt></ruby>
-                        </button>
-                        <button id="case-mix" onclick="setLetterCase('mix')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            <span id="mix-lock-icon">🔒</span> <ruby>大文字<rt>おおもじ</rt></ruby>と<ruby>小文字<rt>こもじ</rt></ruby> ミックス
-                        </button>
-                        <button id="case-color" onclick="setLetterCase('color')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🎨 <ruby>色<rt>いろ</rt></ruby>
-                        </button>
-                        <button id="case-animal" onclick="setLetterCase('animal')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🐶 <ruby>動物<rt>どうぶつ</rt></ruby>
-                        </button>
-                        <button id="case-number" onclick="setLetterCase('number')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🔢 <ruby>数<rt>かず</rt></ruby>
-                        </button>
-                        <button id="case-day" onclick="setLetterCase('day')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            📅 <ruby>曜日<rt>ようび</rt></ruby>
-                        </button>
-                        <button id="case-month" onclick="setLetterCase('month')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🗓️ 1<ruby>月<rt>がつ</rt></ruby>～12<ruby>月<rt>がつ</rt></ruby>
-                        </button>
-                        <button id="case-daily" onclick="setLetterCase('daily')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🏠 <ruby>日用品<rt>にちようひん</rt></ruby>
-                        </button>
-                        <button id="case-vegfruit" onclick="setLetterCase('vegfruit')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🥦 <ruby>野菜<rt>やさい</rt></ruby>・くだもの
-                        </button>
-                        <button id="case-dish" onclick="setLetterCase('dish')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🍳 <ruby>料理名<rt>りょうりめい</rt></ruby>
-                        </button>
-                        <button id="case-sports" onclick="setLetterCase('sports')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            ⚽ スポーツ
-                        </button>
-                        <button id="case-building" onclick="setLetterCase('building')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🏢 <ruby>施設<rt>しせつ</rt></ruby>・たてもの
-                        </button>
-                        <button id="case-verb" onclick="setLetterCase('verb')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🏃 <ruby>動詞<rt>どうし</rt></ruby>
-                        </button>
-                        <button id="case-adjective" onclick="setLetterCase('adjective')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            😊 <ruby>形容詞<rt>けいようし</rt></ruby>
-                        </button>
-                        <button id="case-country" onclick="setLetterCase('country')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🌍 <ruby>国<rt>くに</rt></ruby>
-                        </button>
-                        <button id="case-vehicle" onclick="setLetterCase('vehicle')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            🚗 <ruby>乗り物<rt>のりもの</rt></ruby>
-                        </button>
-                        <button id="case-stationery" onclick="setLetterCase('stationery')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            ✏️ <ruby>文房具<rt>ぶんぼうぐ</rt></ruby>
-                        </button>
-                        <button id="case-subject" onclick="setLetterCase('subject')" class="py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80 flex items-center justify-center gap-1">
-                            📚 <ruby>教科名<rt>きょうかめい</rt></ruby>
-                        </button>
+                    <div id="mode-grid-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-sky-100/70 p-1.5 rounded-2xl border-2 border-popDarkBlue max-h-56 overflow-y-auto">
+                        <!-- Dynamically generated with unlocked modes sorted to the top -->
                     </div>
                 </div>
             </div>
@@ -318,10 +262,10 @@
 
     <!-- Feedback Overlay Modal -->
     <div id="feedback-overlay" class="fixed inset-0 pointer-events-none flex items-center justify-center z-50 opacity-0 transition-opacity duration-200">
-        <div id="feedback-box" class="transform scale-50 transition-transform duration-300 flex flex-col items-center justify-center bg-white/95 border-8 border-popDarkBlue rounded-3xl p-8 shadow-2xl">
+        <div id="feedback-box" class="transform scale-50 transition-transform duration-300 flex flex-col items-center justify-center bg-white/95 border-8 border-popDarkBlue rounded-3xl p-8 shadow-2xl max-w-sm w-full mx-4 text-center">
             <div id="feedback-icon" class="text-7xl md:text-9xl mb-2">⭕</div>
-            <h2 id="feedback-text" class="text-3xl md:text-5xl font-black text-popDarkBlue tracking-wider"><ruby>正解<rt>せいかい</rt></ruby>！</h2>
-            <p id="feedback-sub" class="text-xl md:text-2xl font-bold text-popPink mt-2 font-alphabet">A is for Apple!</p>
+            <h2 id="feedback-text" class="text-2xl md:text-4xl font-black text-popDarkBlue tracking-wider"><ruby>正解<rt>せいかい</rt></ruby>！</h2>
+            <p id="feedback-sub" class="text-lg md:text-2xl font-bold text-popPink mt-2 font-alphabet">A is for Apple!</p>
         </div>
     </div>
 
@@ -357,14 +301,14 @@
     </footer>
 
     <script>
-        // Alphabet Dataset (26 Letters)
+        // Alphabet Dataset (26 Letters with tuned speech strings for F and R)
         const ALPHABET_DATA = [
             { letter: 'A', speechText: 'A', word: 'Apple', emoji: '🍎', translation: '「A」は Apple（りんご）' },
             { letter: 'B', speechText: 'Bee', word: 'Banana', emoji: '🍌', translation: '「B」は Banana（バナナ）' },
             { letter: 'C', speechText: 'Cee', word: 'Cat', emoji: '🐱', translation: '「C」は Cat（ねこ）' },
             { letter: 'D', speechText: 'D', word: 'Dog', emoji: '🐶', translation: '「D」は Dog（いぬ）' },
             { letter: 'E', speechText: 'E', word: 'Elephant', emoji: '🐘', translation: '「E」は Elephant（ぞう）' },
-            { letter: 'F', speechText: 'Ef', word: 'Fish', emoji: '🐟', translation: '「F」は Fish（さかな）' },
+            { letter: 'F', speechText: 'F.', word: 'Fish', emoji: '🐟', translation: '「F」は Fish（さかな）' },
             { letter: 'G', speechText: 'G', word: 'Grape', emoji: '🍇', translation: '「G」は Grape（ぶどう）' },
             { letter: 'H', speechText: 'H', word: 'House', emoji: '🏠', translation: '「H」は House（いえ）' },
             { letter: 'I', speechText: 'I', word: 'Ice cream', emoji: '🍦', translation: '「I」は Ice cream（アイス）' },
@@ -376,7 +320,7 @@
             { letter: 'O', speechText: 'O', word: 'Orange', emoji: '🍊', translation: '「O」は Orange（オレンジ）' },
             { letter: 'P', speechText: 'P', word: 'Panda', emoji: '🐼', translation: '「P」は Panda（パンダ）' },
             { letter: 'Q', speechText: 'Q', word: 'Queen', emoji: '👑', translation: '「Q」は Queen（じょおう）' },
-            { letter: 'R', speechText: 'Ar', word: 'Rabbit', emoji: '🐰', translation: '「R」は Rabbit（うさぎ）' },
+            { letter: 'R', speechText: 'are', word: 'Rabbit', emoji: '🐰', translation: '「R」は Rabbit（うさぎ）' },
             { letter: 'S', speechText: 'S', word: 'Sun', emoji: '☀️', translation: '「S」は Sun（たいよう）' },
             { letter: 'T', speechText: 'T', word: 'Tiger', emoji: '🐯', translation: '「T」は Tiger（トラ）' },
             { letter: 'U', speechText: 'U', word: 'Umbrella', emoji: '☂️', translation: '「U」は Umbrella（かさ）' },
@@ -435,7 +379,7 @@
             { letter: 'Fox', name: 'Fox', speechText: 'Fox', word: 'Fox', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🦊', ja: 'キツネ', translation: '「Fox」は キツネ' }
         ];
 
-        // 20 Numbers Dataset
+        // Numbers Datasets
         const NUMBER_DATA = [
             { letter: 'One', name: 'One', speechText: 'One', word: 'One', hex: '#EFF6FF', textHex: '#073B4C', emoji: '1️⃣', ja: '<ruby>一<rt>いち</rt></ruby>', translation: '「One」は <ruby>一<rt>いち</rt></ruby>' },
             { letter: 'Two', name: 'Two', speechText: 'Two', word: 'Two', hex: '#FEF2F2', textHex: '#073B4C', emoji: '2️⃣', ja: '<ruby>二<rt>に</rt></ruby>', translation: '「Two」は <ruby>二<rt>に</rt></ruby>' },
@@ -459,7 +403,6 @@
             { letter: 'Twenty', name: 'Twenty', speechText: 'Twenty', word: 'Twenty', hex: '#FEFCE8', textHex: '#073B4C', emoji: '⑳', ja: '<ruby>二十<rt>にじゅう</rt></ruby>', translation: '「Twenty」は <ruby>二十<rt>にじゅう</rt></ruby>' }
         ];
 
-        // Advanced Numbers Dataset
         const NUMBER_ADVANCED_DATA = [
             { letter: 'Twenty-one', name: 'Twenty-one', speechText: 'Twenty-one', word: 'Twenty-one', hex: '#EFF6FF', textHex: '#073B4C', emoji: '21', ja: '<ruby>二十一<rt>にじゅういち</rt></ruby>', translation: '「Twenty-one」は <ruby>二十一<rt>にじゅういち</rt></ruby>' },
             { letter: 'Twenty-two', name: 'Twenty-two', speechText: 'Twenty-two', word: 'Twenty-two', hex: '#FEF2F2', textHex: '#073B4C', emoji: '22', ja: '<ruby>二十二<rt>にじゅうに</rt></ruby>', translation: '「Twenty-two」は <ruby>二十二<rt>にじゅうに</rt></ruby>' },
@@ -493,7 +436,7 @@
             { letter: 'Saturday', name: 'Saturday', speechText: 'Saturday', word: 'Saturday', hex: '#F3E8FF', textHex: '#073B4C', emoji: '🪐', ja: '<ruby>土曜日<rt>どようび</rt></ruby>', translation: '「Saturday」は <ruby>土曜日<rt>どようび</rt></ruby>' }
         ];
 
-        // Months of the Year Dataset
+        // Months Dataset
         const MONTHS_DATA = [
             { letter: 'January', name: 'January', speechText: 'January', word: 'January', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🎍', ja: '1<ruby>月<rt>がつ</rt></ruby>', translation: '「January」は 1<ruby>月<rt>がつ</rt></ruby>' },
             { letter: 'February', name: 'February', speechText: 'February', word: 'February', hex: '#FDF2F8', textHex: '#073B4C', emoji: '🍫', ja: '2<ruby>月<rt>がつ</rt></ruby>', translation: '「February」は 2<ruby>月<rt>がつ</rt></ruby>' },
@@ -509,7 +452,7 @@
             { letter: 'December', name: 'December', speechText: 'December', word: 'December', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🎄', ja: '12<ruby>月<rt>がつ</rt></ruby>', translation: '「December」は 12<ruby>月<rt>がつ</rt></ruby>' }
         ];
 
-        // Daily Household Items Dataset
+        // Daily Items Dataset
         const DAILY_DATA = [
             { letter: 'Pen', name: 'Pen', speechText: 'Pen', word: 'Pen', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🖊️', ja: 'ペン', translation: '「Pen」は ペン' },
             { letter: 'Book', name: 'Book', speechText: 'Book', word: 'Book', hex: '#FEF2F2', textHex: '#073B4C', emoji: '📖', ja: '<ruby>本<rt>ほん</rt></ruby>', translation: '「Book」は <ruby>本<rt>ほん</rt></ruby>' },
@@ -533,7 +476,7 @@
             { letter: 'Scissors', name: 'Scissors', speechText: 'Scissors', word: 'Scissors', hex: '#FEFCE8', textHex: '#073B4C', emoji: '✂️', ja: 'はさみ', translation: '「Scissors」は はさみ' }
         ];
 
-        // Vegetables & Fruits Dataset
+        // Veg & Fruits Dataset
         const VEGFRUIT_DATA = [
             { letter: 'Tomato', name: 'Tomato', speechText: 'Tomato', word: 'Tomato', hex: '#FEE2E2', textHex: '#073B4C', emoji: '🍅', ja: 'トマト', translation: '「Tomato」は トマト' },
             { letter: 'Carrot', name: 'Carrot', speechText: 'Carrot', word: 'Carrot', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🥕', ja: 'にんじん', translation: '「Carrot」は にんじん' },
@@ -672,7 +615,7 @@
             { letter: 'Old', name: 'Old', speechText: 'Old', word: 'Old', hex: '#F5F5F4', textHex: '#073B4C', emoji: '📜', ja: '<ruby>古<rt>ふる</rt></ruby>い', translation: '「Old」は <ruby>古<rt>ふる</rt></ruby>い' },
             { letter: 'Bright', name: 'Bright', speechText: 'Bright', word: 'Bright', hex: '#FEF08A', textHex: '#073B4C', emoji: '☀️', ja: '<ruby>明<rt>あかる</rt></ruby>い', translation: '「Bright」は <ruby>明<rt>あかる</rt></ruby>い' },
             { letter: 'Dark', name: 'Dark', speechText: 'Dark', word: 'Dark', hex: '#FAF5FF', textHex: '#073B4C', emoji: '🌙', ja: '<ruby>暗<rt>くら</rt></ruby>い', translation: '「Dark」は <ruby>暗<rt>くら</rt></ruby>い' },
-            { letter: 'Heavy', name: 'Heavy', speechText: 'Heavy', word: 'Heavy', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🏋️️', ja: '<ruby>重<rt>おも</rt></ruby>い', translation: '「Heavy」は <ruby>重<rt>おも</rt></ruby>い' },
+            { letter: 'Heavy', name: 'Heavy', speechText: 'Heavy', word: 'Heavy', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🏋', ja: '<ruby>重<rt>おも</rt></ruby>い', translation: '「Heavy」は <ruby>重<rt>おも</rt></ruby>い' },
             { letter: 'Light', name: 'Light', speechText: 'Light', word: 'Light', hex: '#F0FDFA', textHex: '#073B4C', emoji: '🎈', ja: '<ruby>軽<rt>かる</rt></ruby>い', translation: '「Light」は <ruby>軽<rt>かる</rt></ruby>い' },
             { letter: 'Clean', name: 'Clean', speechText: 'Clean', word: 'Clean', hex: '#E0F2FE', textHex: '#073B4C', emoji: '✨', ja: 'きれいな', translation: '「Clean」は きれいな' }
         ];
@@ -707,7 +650,7 @@
             { letter: 'Bus', name: 'Bus', speechText: 'Bus', word: 'Bus', hex: '#FEF08A', textHex: '#073B4C', emoji: '🚌', ja: 'バス', translation: '「Bus」は バス' },
             { letter: 'Train', name: 'Train', speechText: 'Train', word: 'Train', hex: '#EFF6FF', textHex: '#073B4C', emoji: '🚆', ja: '<ruby>電車<rt>でんしゃ</rt></ruby>', translation: '「Train」は <ruby>電車<rt>でんしゃ</rt></ruby>' },
             { letter: 'Bullet train', name: 'Bullet train', speechText: 'Bullet train', word: 'Bullet train', hex: '#CFFAFE', textHex: '#073B4C', emoji: '🚅', ja: '<ruby>新幹線<rt>しんかんせん</rt></ruby>', translation: '「Bullet train」は <ruby>新幹線<rt>しんかんせん</rt></ruby>' },
-            { letter: 'Airplane', name: 'Airplane', speechText: 'Airplane', word: 'Airplane', hex: '#E0F2FE', textHex: '#073B4C', emoji: '✈️️', ja: '<ruby>飛行機<rt>ひこうき</rt></ruby>', translation: '「Airplane」は <ruby>飛行機<rt>ひこうき</rt></ruby>' },
+            { letter: 'Airplane', name: 'Airplane', speechText: 'Airplane', word: 'Airplane', hex: '#E0F2FE', textHex: '#073B4C', emoji: '✈', ja: '<ruby>飛行機<rt>ひこうき</rt></ruby>', translation: '「Airplane」は <ruby>飛行機<rt>ひこうき</rt></ruby>' },
             { letter: 'Bicycle', name: 'Bicycle', speechText: 'Bicycle', word: 'Bicycle', hex: '#DCFCE7', textHex: '#073B4C', emoji: '🚲', ja: '<ruby>自転車<rt>じてんしゃ</rt></ruby>', translation: '「Bicycle」は <ruby>自転車<rt>じてんしゃ</rt></ruby>' },
             { letter: 'Ship', name: 'Ship', speechText: 'Ship', word: 'Ship', hex: '#F0FDFA', textHex: '#073B4C', emoji: '🚢', ja: '<ruby>船<rt>ふね</rt></ruby>', translation: '「Ship」は <ruby>船<rt>ふね</rt></ruby>' },
             { letter: 'Rocket', name: 'Rocket', speechText: 'Rocket', word: 'Rocket', hex: '#FFEDD5', textHex: '#073B4C', emoji: '🚀', ja: 'ロケット', translation: '「Rocket」は ロケット' },
@@ -733,7 +676,7 @@
             { letter: 'Notebook', name: 'Notebook', speechText: 'Notebook', word: 'Notebook', hex: '#FEF08A', textHex: '#073B4C', emoji: '📓', ja: 'ノート', translation: '「Notebook」は ノート' },
             { letter: 'Pencil case', name: 'Pencil case', speechText: 'Pencil case', word: 'Pencil case', hex: '#FDF2F8', textHex: '#073B4C', emoji: '👝', ja: 'ふでばこ', translation: '「Pencil case」は ふでばこ' },
             { letter: 'Glue', name: 'Glue', speechText: 'Glue', word: 'Glue', hex: '#E0F2FE', textHex: '#073B4C', emoji: '🧴', ja: 'のり', translation: '「Glue」は のり' },
-            { letter: 'Scissors', name: 'Scissors', speechText: 'Scissors', word: 'Scissors', hex: '#FEF2F2', textHex: '#073B4C', emoji: '✂️', ja: 'はさみ', translation: '「Scissors」は はさみ' },
+            { letter: 'Scissors', name: 'Scissors', speechText: 'Scissors', word: 'Scissors', hex: '#FEF2F2', textHex: '#073B4C', emoji: '✂️️', ja: 'はさみ', translation: '「Scissors」は はさみ' },
             { letter: 'Pencil sharpener', name: 'Pencil sharpener', speechText: 'Pencil sharpener', word: 'Pencil sharpener', hex: '#FAF5FF', textHex: '#073B4C', emoji: '⚙', ja: 'えんぴつけずり', translation: '「Pencil sharpener」は えんぴつけずり' },
             { letter: 'Stapler', name: 'Stapler', speechText: 'Stapler', word: 'Stapler', hex: '#F0FDFA', textHex: '#073B4C', emoji: '📎', ja: 'ホッチキス', translation: '「Stapler」は ホッチキス' },
             { letter: 'Tape', name: 'Tape', speechText: 'Tape', word: 'Tape', hex: '#FFF7ED', textHex: '#073B4C', emoji: '🎞️', ja: 'テープ', translation: '「Tape」は テープ' },
@@ -776,7 +719,6 @@
             'bg-purple-100 hover:bg-purple-200 text-popDarkBlue'
         ];
 
-        // Global States
         let score = 0;
         let streak = 0;
         let maxStreak = 0;
@@ -849,14 +791,15 @@
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(659.25, now);
-                osc.frequency.setValueAtTime(987.77, now + 0.15);
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.12);
+                osc.frequency.setValueAtTime(783.99, now + 0.24);
                 gain.gain.setValueAtTime(0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start(now);
-                osc.stop(now + 0.6);
+                osc.stop(now + 0.5);
             } catch (e) {
                 console.error(e);
             }
@@ -871,8 +814,8 @@
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(180, now);
-                osc.frequency.setValueAtTime(140, now + 0.15);
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(180, now + 0.15);
                 gain.gain.setValueAtTime(0.2, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
                 osc.connect(gain);
@@ -892,7 +835,11 @@
 
             window.speechSynthesis.cancel();
 
-            const utterance = new SpeechSynthesisUtterance(text);
+            let textToSpeak = text;
+            if (text === 'F' || text === 'f') textToSpeak = 'F.';
+            if (text === 'R' || text === 'r') textToSpeak = 'are';
+
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
             utterance.lang = lang;
             utterance.rate = speechRate;
             utterance.pitch = 1.0;
@@ -1073,78 +1020,64 @@
             speakText(textToSpeak, 'en-US');
         }
 
+        function getCorrectSetForMode(mode) {
+            switch(mode) {
+                case 'upper': return upperCorrectSet;
+                case 'lower': return lowerCorrectSet;
+                case 'mix': return mixCorrectSet;
+                case 'color': return colorCorrectSet;
+                case 'animal': return animalCorrectSet;
+                case 'number': return numberCorrectSet;
+                case 'day': return dayCorrectSet;
+                case 'month': return monthCorrectSet;
+                case 'daily': return dailyCorrectSet;
+                case 'vegfruit': return vegfruitCorrectSet;
+                case 'dish': return dishCorrectSet;
+                case 'sports': return sportsCorrectSet;
+                case 'building': return buildingCorrectSet;
+                case 'verb': return verbCorrectSet;
+                case 'adjective': return adjectiveCorrectSet;
+                case 'country': return countryCorrectSet;
+                case 'vehicle': return vehicleCorrectSet;
+                case 'stationery': return stationeryCorrectSet;
+                case 'subject': return subjectCorrectSet;
+                default: return upperCorrectSet;
+            }
+        }
+
+        function saveCorrectSetForMode(mode, set) {
+            const arr = [...set];
+            localStorage.setItem(`alphabet_${mode}_correct`, JSON.stringify(arr));
+        }
+
         function handleChoiceSelect(selectedItem, buttonEl) {
             if (isProcessingChoice || isGameOver) return;
             isProcessingChoice = true;
 
             if (selectedItem.letter === currentTarget.letter) {
-                score += 100;
+                // Correct Answer
+                score += 10;
                 streak += 1;
                 if (streak > maxStreak) maxStreak = streak;
 
-                totalPoints += 100;
+                totalPoints += 10; // +10 points per correct answer
+
+                const correctSet = getCorrectSetForMode(letterCase);
+                const prevSize = correctSet.size;
+                correctSet.add(currentTarget.letter);
+                saveCorrectSetForMode(letterCase, correctSet);
+
+                const currentDataset = getCurrentDataset();
+                let isBonusAwarded = false;
+
+                // Check 100% completion bonus (+100pt)
+                if (prevSize < currentDataset.length && correctSet.size >= currentDataset.length) {
+                    totalPoints += 100; // Bonus +100pt
+                    isBonusAwarded = true;
+                }
+
                 localStorage.setItem('alphabet_total_points', totalPoints.toString());
                 updateTotalPointsDisplay();
-
-                // Progression tracking
-                if (letterCase === 'upper') {
-                    upperCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_upper_correct', JSON.stringify([...upperCorrectSet]));
-                } else if (letterCase === 'lower') {
-                    lowerCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_lower_correct', JSON.stringify([...lowerCorrectSet]));
-                } else if (letterCase === 'mix') {
-                    mixCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_mix_correct', JSON.stringify([...mixCorrectSet]));
-                } else if (letterCase === 'color') {
-                    colorCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_color_correct', JSON.stringify([...colorCorrectSet]));
-                } else if (letterCase === 'animal') {
-                    animalCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_animal_correct', JSON.stringify([...animalCorrectSet]));
-                } else if (letterCase === 'number') {
-                    numberCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_number_correct', JSON.stringify([...numberCorrectSet]));
-                } else if (letterCase === 'day') {
-                    dayCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_day_correct', JSON.stringify([...dayCorrectSet]));
-                } else if (letterCase === 'month') {
-                    monthCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_month_correct', JSON.stringify([...monthCorrectSet]));
-                } else if (letterCase === 'daily') {
-                    dailyCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_daily_correct', JSON.stringify([...dailyCorrectSet]));
-                } else if (letterCase === 'vegfruit') {
-                    vegfruitCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_vegfruit_correct', JSON.stringify([...vegfruitCorrectSet]));
-                } else if (letterCase === 'dish') {
-                    dishCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_dish_correct', JSON.stringify([...dishCorrectSet]));
-                } else if (letterCase === 'sports') {
-                    sportsCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_sports_correct', JSON.stringify([...sportsCorrectSet]));
-                } else if (letterCase === 'building') {
-                    buildingCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_building_correct', JSON.stringify([...buildingCorrectSet]));
-                } else if (letterCase === 'verb') {
-                    verbCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_verb_correct', JSON.stringify([...verbCorrectSet]));
-                } else if (letterCase === 'adjective') {
-                    adjectiveCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_adjective_correct', JSON.stringify([...adjectiveCorrectSet]));
-                } else if (letterCase === 'country') {
-                    countryCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_country_correct', JSON.stringify([...countryCorrectSet]));
-                } else if (letterCase === 'vehicle') {
-                    vehicleCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_vehicle_correct', JSON.stringify([...vehicleCorrectSet]));
-                } else if (letterCase === 'stationery') {
-                    stationeryCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_stationery_correct', JSON.stringify([...stationeryCorrectSet]));
-                } else if (letterCase === 'subject') {
-                    subjectCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_subject_correct', JSON.stringify([...subjectCorrectSet]));
-                }
 
                 updateClearStatusUI();
                 checkRandomUnlock();
@@ -1166,7 +1099,12 @@
                 if (hintText) hintText.innerHTML = `${currentTarget.translation}`;
                 if (hintBubble) hintBubble.classList.remove('hidden');
 
-                showFeedbackModal(true, `<ruby>正解<rt>せいかい</rt></ruby>！`, isCategoryMode ? `${currentTarget.name || currentTarget.letter} ${currentTarget.emoji}` : `${currentTarget.word} ${currentTarget.emoji}`);
+                let feedbackTitle = `<ruby>正解<rt>せいかい</rt></ruby>！ (+10pt)`;
+                if (isBonusAwarded) {
+                    feedbackTitle = `🎉 ぜんぶクリア！ (+100ptボーナス！)`;
+                }
+
+                showFeedbackModal(true, feedbackTitle, isCategoryMode ? `${currentTarget.name || currentTarget.letter} ${currentTarget.emoji}` : `${currentTarget.word} ${currentTarget.emoji}`);
 
                 setTimeout(() => {
                     speakText(speechMsg, 'en-US', () => {
@@ -1180,6 +1118,7 @@
                 }, 400);
 
             } else {
+                // Incorrect Answer
                 streak = 0;
                 updateScoreDisplay();
                 playIncorrectSound();
@@ -1339,7 +1278,7 @@
 
             if (mode === 'all' && !isMixCleared) {
                 playIncorrectSound();
-                showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', '4<ruby>択<rt>たく</rt></ruby>クイズの「ミックス」で全問クリアしてね！');
+                showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', '「ミックス」で全問クリアしてね！');
                 setTimeout(() => {
                     hideFeedbackModal();
                 }, 2000);
@@ -1384,7 +1323,7 @@
         function setLetterCase(mode) {
             if (!unlockedModes.includes(mode)) {
                 playIncorrectSound();
-                showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', '今あそべるゲームを ぜんぶクリアしてね！');
+                showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', 'いま選べるゲームをぜんぶクリアしてね！');
                 setTimeout(() => {
                     hideFeedbackModal();
                 }, 2000);
@@ -1397,6 +1336,9 @@
         }
 
         function updateCaseButtonsUI() {
+            const container = document.getElementById('mode-grid-container');
+            if (!container) return;
+
             const isNumberL1Cleared = NUMBER_DATA.every(item => numberCorrectSet.has(item.letter));
             const totalNumberCount = isNumberL1Cleared ? (NUMBER_DATA.length + NUMBER_ADVANCED_DATA.length) : NUMBER_DATA.length;
 
@@ -1418,30 +1360,74 @@
                 { id: 'adjective', mode: 'adjective', label: '😊 <ruby>形容詞<rt>けいようし</rt></ruby>', count: adjectiveCorrectSet.size, total: ADJECTIVE_DATA.length },
                 { id: 'country', mode: 'country', label: '🌍 <ruby>国<rt>くに</rt></ruby>', count: countryCorrectSet.size, total: COUNTRY_DATA.length },
                 { id: 'vehicle', mode: 'vehicle', label: '🚗 <ruby>乗り物<rt>のりもの</rt></ruby>', count: vehicleCorrectSet.size, total: VEHICLE_DATA.length },
-                { id: 'stationery', mode: 'stationery', label: '✏️ <ruby>文房具<rt>ぶんぼうぐ</rt></ruby>', count: stationeryCorrectSet.size, total: STATIONERY_DATA.length },
-                { id: 'subject', mode: 'subject', label: '📚 <ruby>教科名<rt>きょうかめい</rt></ruby>', count: subjectCorrectSet.size, total: SUBJECT_DATA.length }
-            ];
+                { id: 'stationery', mode: 'stationery', label: '✏ <ruby>文房具<rt>ぶんぼうぐ</rt></ruby>', count: stationeryCorrectSet.size, total: STATIONERY_DATA.length },
+            { id: 'subject', mode: 'subject', label: '📚 <ruby>教科名<rt>きょうかめい</rt></ruby>', count: subjectCorrectSet.size, total: SUBJECT_DATA.length }
+        ];
 
-            caseModes.forEach(item => {
-                const btn = document.getElementById(`case-${item.id}`);
-                if (!btn) return;
+        // Sort: Initial games (upper, lower) stay at the top, newly unlocked modes follow below
+        const INITIAL_MODES = ['upper', 'lower'];
+        const sortedModes = [...caseModes].sort((a, b) => {
+            const aInit = INITIAL_MODES.indexOf(a.id);
+            const bInit = INITIAL_MODES.indexOf(b.id);
 
+            // 1. Initial modes (upper, lower) stay fixed at the top
+            if (aInit !== -1 && bInit !== -1) return aInit - bInit;
+            if (aInit !== -1) return -1;
+            if (bInit !== -1) return 1;
+
+            const aIndex = unlockedModes.indexOf(a.id);
+            const bIndex = unlockedModes.indexOf(b.id);
+            const aUnlocked = aIndex !== -1;
+            const bUnlocked = bIndex !== -1;
+
+            // 2. Unlocked modes come before locked modes
+            if (aUnlocked && !bUnlocked) return -1;
+            if (!aUnlocked && bUnlocked) return 1;
+
+            // 3. Among newly unlocked modes, latest unlocked games appear at the top of the unlocked list (below upper & lower)
+            if (aUnlocked && bUnlocked) {
+                return bIndex - aIndex;
+            }
+
+            return 0;
+        });
+
+        container.innerHTML = '';
+
+        sortedModes.forEach(item => {
+                const btn = document.createElement('button');
+                btn.id = `case-${item.id}`;
                 const isUnlocked = unlockedModes.includes(item.id);
 
                 if (!isUnlocked) {
-                    btn.innerHTML = `<div class="flex flex-col items-center justify-center w-full"><div class="flex items-center gap-1">🔒 ？？？</div><span class="block text-[11px] font-bold opacity-80 mt-0.5 font-alphabet">🔒 ロック</span></div>`;
-                    btn.className = 'py-2 rounded-xl font-bold text-xs md:text-sm transition-all text-gray-500 bg-gray-200/80 border-2 border-gray-400 opacity-80 cursor-not-allowed';
+                    btn.innerHTML = `<div class="flex flex-col items-center justify-center w-full"><div class="flex items-center gap-1 font-bold">🔒 ？？？</div><span class="block text-[11px] font-bold opacity-80 mt-0.5 font-alphabet">ロック中</span></div>`;
+                    btn.className = 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-gray-500 bg-gray-200/80 border-2 border-gray-400 opacity-80 cursor-not-allowed';
                 } else {
                     const progressText = `<span class="block text-[11px] font-bold opacity-80 mt-0.5 font-alphabet">${item.count} / ${item.total}</span>`;
                     btn.innerHTML = `<div class="flex flex-col items-center justify-center w-full"><div>${item.label}</div>${progressText}</div>`;
                     btn.className = letterCase === item.mode
-                        ? 'py-2 rounded-xl font-bold text-xs md:text-sm transition-all bg-popBlue text-white border-2 border-popDarkBlue shadow-sm'
-                        : 'py-2 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80';
+                        ? 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all bg-popBlue text-white border-2 border-popDarkBlue shadow-sm'
+                        : 'py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all text-popDarkBlue hover:bg-white/80';
                 }
+
+                btn.onclick = () => setLetterCase(item.mode);
+                container.appendChild(btn);
             });
         }
 
         function checkRandomUnlock() {
+            // Check Mix unlock condition (requires Upper & Lower 100% complete)
+            if (upperCorrectSet.size >= 26 && lowerCorrectSet.size >= 26 && !unlockedModes.includes('mix')) {
+                unlockedModes.push('mix');
+                localStorage.setItem('alphabet_unlocked_modes', JSON.stringify(unlockedModes));
+                setTimeout(() => {
+                    showFeedbackModal(true, '🎉 新しいゲーム！', '「大文字と小文字 ミックス」があそべるようになったよ！');
+                    setTimeout(() => hideFeedbackModal(), 2500);
+                }, 800);
+                updateClearStatusUI();
+                return;
+            }
+
             const isNumberL1Cleared = NUMBER_DATA.every(item => numberCorrectSet.has(item.letter));
             const totalNumberCount = isNumberL1Cleared ? (NUMBER_DATA.length + NUMBER_ADVANCED_DATA.length) : NUMBER_DATA.length;
 
@@ -1474,7 +1460,7 @@
             });
 
             if (allCurrentlyUnlockedCleared) {
-                const lockedModes = caseModes.filter(m => !unlockedModes.includes(m.id));
+                const lockedModes = caseModes.filter(m => !unlockedModes.includes(m.id) && m.id !== 'mix');
                 if (lockedModes.length > 0) {
                     const randomIndex = Math.floor(Math.random() * lockedModes.length);
                     const newlyUnlocked = lockedModes[randomIndex];
@@ -1482,7 +1468,7 @@
                     localStorage.setItem('alphabet_unlocked_modes', JSON.stringify(unlockedModes));
 
                     setTimeout(() => {
-                        showFeedbackModal(true, '🎉 ロック解除！', 'あたらしくゲームが1つ あそべるようになったよ！');
+                        showFeedbackModal(true, '🎉 シークレットゲームかいほう！', 'あたらしくゲームが1つ あそべるようになったよ！');
                         setTimeout(() => {
                             hideFeedbackModal();
                         }, 2500);
@@ -1709,6 +1695,7 @@
             }
         }
 
+        // App Initializer
         window.onload = function() {
             setTimeMode(180);
             updateClearStatusUI();
