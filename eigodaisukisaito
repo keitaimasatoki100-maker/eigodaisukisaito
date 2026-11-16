@@ -21,6 +21,9 @@
                         alphabet: ['Andika', 'Comic Neue', '"UD デジタル教科書体 N-R"', '"UD Digi Kyokasho N-R"', 'YuKyokasho', 'sans-serif'],
                         rounded: ['"M PLUS Rounded 1c"', 'sans-serif'],
                     },
+                    borderWidth: {
+                        '3': '3px'
+                    },
                     colors: {
                         popYellow: '#FFD166',
                         popPink: '#FF6B6B',
@@ -795,35 +798,68 @@
         // Available targets pool
         let availableTargets = [];
 
+        // Safe Storage Helpers (localStorage が使えない環境でも動くように)
+        function storageGet(key, fallback) {
+            try {
+                const v = localStorage.getItem(key);
+                return v === null ? fallback : v;
+            } catch (e) {
+                return fallback;
+            }
+        }
+        function storageSet(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (e) {}
+        }
+        function loadSet(key) {
+            try {
+                const arr = JSON.parse(storageGet(key, '[]'));
+                return new Set(Array.isArray(arr) ? arr : []);
+            } catch (e) {
+                return new Set();
+            }
+        }
+
         // Total Cumulative Points Storage
-        let totalPoints = parseInt(localStorage.getItem('alphabet_total_points') || '0', 10);
+        let totalPoints = parseInt(storageGet('alphabet_total_points', '0'), 10) || 0;
 
         // Progress Tracking Sets
-        let upperCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_upper_correct') || '[]'));
-        let lowerCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_lower_correct') || '[]'));
-        let mixCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_mix_correct') || '[]'));
-        let colorCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_color_correct') || '[]'));
-        let animalCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_animal_correct') || '[]'));
-        let numberCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_number_correct') || '[]'));
-        let dayCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_day_correct') || '[]'));
-        let monthCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_month_correct') || '[]'));
-        let dailyCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_daily_correct') || '[]'));
-        let vegfruitCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_vegfruit_correct') || '[]'));
-        let dishCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_dish_correct') || '[]'));
-        let sportsCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_sports_correct') || '[]'));
-        let buildingCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_building_correct') || '[]'));
-        let verbCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_verb_correct') || '[]'));
-        let adjectiveCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_adjective_correct') || '[]'));
-        let countryCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_country_correct') || '[]'));
-        let vehicleCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_vehicle_correct') || '[]'));
-        let stationeryCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_stationery_correct') || '[]'));
-        let subjectCorrectSet = new Set(JSON.parse(localStorage.getItem('alphabet_subject_correct') || '[]'));
+        let upperCorrectSet = loadSet('alphabet_upper_correct');
+        let lowerCorrectSet = loadSet('alphabet_lower_correct');
+        let mixCorrectSet = loadSet('alphabet_mix_correct');
+        let colorCorrectSet = loadSet('alphabet_color_correct');
+        let animalCorrectSet = loadSet('alphabet_animal_correct');
+        let numberCorrectSet = loadSet('alphabet_number_correct');
+        let dayCorrectSet = loadSet('alphabet_day_correct');
+        let monthCorrectSet = loadSet('alphabet_month_correct');
+        let dailyCorrectSet = loadSet('alphabet_daily_correct');
+        let vegfruitCorrectSet = loadSet('alphabet_vegfruit_correct');
+        let dishCorrectSet = loadSet('alphabet_dish_correct');
+        let sportsCorrectSet = loadSet('alphabet_sports_correct');
+        let buildingCorrectSet = loadSet('alphabet_building_correct');
+        let verbCorrectSet = loadSet('alphabet_verb_correct');
+        let adjectiveCorrectSet = loadSet('alphabet_adjective_correct');
+        let countryCorrectSet = loadSet('alphabet_country_correct');
+        let vehicleCorrectSet = loadSet('alphabet_vehicle_correct');
+        let stationeryCorrectSet = loadSet('alphabet_stationery_correct');
+        let subjectCorrectSet = loadSet('alphabet_subject_correct');
 
         // Lock & Unlock Management
-        let unlockedModes = JSON.parse(localStorage.getItem('alphabet_unlocked_modes') || '["upper", "lower"]');
+        let unlockedModes;
+        try {
+            unlockedModes = JSON.parse(storageGet('alphabet_unlocked_modes', '["upper", "lower"]'));
+        } catch (e) {
+            unlockedModes = ['upper', 'lower'];
+        }
         if (!Array.isArray(unlockedModes) || unlockedModes.length === 0) {
             unlockedModes = ['upper', 'lower'];
         }
+
+        // 古いタイマー・音声コールバックが新しいゲームに影響しないようにするためのID
+        let gameSessionId = 0;
+        let feedbackModalId = 0;
+        let cardSpeechId = 0;
 
         let audioCtx = null;
 
@@ -898,7 +934,8 @@
             utterance.pitch = 1.0;
 
             const voices = window.speechSynthesis.getVoices();
-            const enVoice = voices.find(v => v.lang.startsWith('en') || v.lang.includes('US') || v.lang.includes('GB'));
+            const normLang = v => (v.lang || '').replace('_', '-').toLowerCase();
+            const enVoice = voices.find(v => normLang(v) === 'en-us') || voices.find(v => normLang(v).startsWith('en'));
             if (enVoice) {
                 utterance.voice = enVoice;
             }
@@ -943,7 +980,7 @@
             const timerDisplay = document.getElementById('timer-display');
             const timerIcon = document.getElementById('timer-icon');
 
-            if (timerMode === 'unlimited') {
+            if (timerMode === 'unlimited' || gameMode === 'cards') {
                 if (timerDisplay) timerDisplay.innerText = '∞';
                 if (timerIcon) timerIcon.className = 'fa-solid fa-infinity text-popBlue text-lg md:text-2xl';
                 return;
@@ -1062,7 +1099,9 @@
                 renderAllGridMode();
             }
 
+            const sessionId = gameSessionId;
             setTimeout(() => {
+                if (sessionId !== gameSessionId) return;
                 playCurrentTargetSound();
             }, 300);
         }
@@ -1076,6 +1115,7 @@
         function handleChoiceSelect(selectedItem, buttonEl) {
             if (isProcessingChoice || isGameOver) return;
             isProcessingChoice = true;
+            const sessionId = gameSessionId;
 
             if (selectedItem.letter === currentTarget.letter) {
                 score += 100;
@@ -1083,67 +1123,67 @@
                 if (streak > maxStreak) maxStreak = streak;
 
                 totalPoints += 100;
-                localStorage.setItem('alphabet_total_points', totalPoints.toString());
+                storageSet('alphabet_total_points', totalPoints.toString());
                 updateTotalPointsDisplay();
 
                 // Progression tracking
                 if (letterCase === 'upper') {
                     upperCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_upper_correct', JSON.stringify([...upperCorrectSet]));
+                    storageSet('alphabet_upper_correct', JSON.stringify([...upperCorrectSet]));
                 } else if (letterCase === 'lower') {
                     lowerCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_lower_correct', JSON.stringify([...lowerCorrectSet]));
+                    storageSet('alphabet_lower_correct', JSON.stringify([...lowerCorrectSet]));
                 } else if (letterCase === 'mix') {
                     mixCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_mix_correct', JSON.stringify([...mixCorrectSet]));
+                    storageSet('alphabet_mix_correct', JSON.stringify([...mixCorrectSet]));
                 } else if (letterCase === 'color') {
                     colorCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_color_correct', JSON.stringify([...colorCorrectSet]));
+                    storageSet('alphabet_color_correct', JSON.stringify([...colorCorrectSet]));
                 } else if (letterCase === 'animal') {
                     animalCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_animal_correct', JSON.stringify([...animalCorrectSet]));
+                    storageSet('alphabet_animal_correct', JSON.stringify([...animalCorrectSet]));
                 } else if (letterCase === 'number') {
                     numberCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_number_correct', JSON.stringify([...numberCorrectSet]));
+                    storageSet('alphabet_number_correct', JSON.stringify([...numberCorrectSet]));
                 } else if (letterCase === 'day') {
                     dayCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_day_correct', JSON.stringify([...dayCorrectSet]));
+                    storageSet('alphabet_day_correct', JSON.stringify([...dayCorrectSet]));
                 } else if (letterCase === 'month') {
                     monthCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_month_correct', JSON.stringify([...monthCorrectSet]));
+                    storageSet('alphabet_month_correct', JSON.stringify([...monthCorrectSet]));
                 } else if (letterCase === 'daily') {
                     dailyCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_daily_correct', JSON.stringify([...dailyCorrectSet]));
+                    storageSet('alphabet_daily_correct', JSON.stringify([...dailyCorrectSet]));
                 } else if (letterCase === 'vegfruit') {
                     vegfruitCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_vegfruit_correct', JSON.stringify([...vegfruitCorrectSet]));
+                    storageSet('alphabet_vegfruit_correct', JSON.stringify([...vegfruitCorrectSet]));
                 } else if (letterCase === 'dish') {
                     dishCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_dish_correct', JSON.stringify([...dishCorrectSet]));
+                    storageSet('alphabet_dish_correct', JSON.stringify([...dishCorrectSet]));
                 } else if (letterCase === 'sports') {
                     sportsCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_sports_correct', JSON.stringify([...sportsCorrectSet]));
+                    storageSet('alphabet_sports_correct', JSON.stringify([...sportsCorrectSet]));
                 } else if (letterCase === 'building') {
                     buildingCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_building_correct', JSON.stringify([...buildingCorrectSet]));
+                    storageSet('alphabet_building_correct', JSON.stringify([...buildingCorrectSet]));
                 } else if (letterCase === 'verb') {
                     verbCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_verb_correct', JSON.stringify([...verbCorrectSet]));
+                    storageSet('alphabet_verb_correct', JSON.stringify([...verbCorrectSet]));
                 } else if (letterCase === 'adjective') {
                     adjectiveCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_adjective_correct', JSON.stringify([...adjectiveCorrectSet]));
+                    storageSet('alphabet_adjective_correct', JSON.stringify([...adjectiveCorrectSet]));
                 } else if (letterCase === 'country') {
                     countryCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_country_correct', JSON.stringify([...countryCorrectSet]));
+                    storageSet('alphabet_country_correct', JSON.stringify([...countryCorrectSet]));
                 } else if (letterCase === 'vehicle') {
                     vehicleCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_vehicle_correct', JSON.stringify([...vehicleCorrectSet]));
+                    storageSet('alphabet_vehicle_correct', JSON.stringify([...vehicleCorrectSet]));
                 } else if (letterCase === 'stationery') {
                     stationeryCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_stationery_correct', JSON.stringify([...stationeryCorrectSet]));
+                    storageSet('alphabet_stationery_correct', JSON.stringify([...stationeryCorrectSet]));
                 } else if (letterCase === 'subject') {
                     subjectCorrectSet.add(currentTarget.letter);
-                    localStorage.setItem('alphabet_subject_correct', JSON.stringify([...subjectCorrectSet]));
+                    storageSet('alphabet_subject_correct', JSON.stringify([...subjectCorrectSet]));
                 }
 
                 updateClearStatusUI();
@@ -1166,12 +1206,14 @@
                 if (hintText) hintText.innerHTML = `${currentTarget.translation}`;
                 if (hintBubble) hintBubble.classList.remove('hidden');
 
-                showFeedbackModal(true, `<ruby>正解<rt>せいかい</rt></ruby>！`, isCategoryMode ? `${currentTarget.name || currentTarget.letter} ${currentTarget.emoji}` : `${currentTarget.word} ${currentTarget.emoji}`);
+                const correctModalId = showFeedbackModal(true, `<ruby>正解<rt>せいかい</rt></ruby>！`, isCategoryMode ? `${currentTarget.name || currentTarget.letter} ${currentTarget.emoji}` : `${currentTarget.word} ${currentTarget.emoji}`);
 
                 setTimeout(() => {
+                    if (sessionId !== gameSessionId) return;
                     speakText(speechMsg, 'en-US', () => {
                         setTimeout(() => {
-                            hideFeedbackModal();
+                            if (sessionId !== gameSessionId) return;
+                            hideFeedbackModal(correctModalId);
                             if (!isGameOver) {
                                 nextQuestion();
                             }
@@ -1189,9 +1231,10 @@
                     setTimeout(() => buttonEl.classList.remove('animate-shake'), 400);
                 }
 
-                showFeedbackModal(false, 'ざんねん！', 'もういちど きいてみよう！');
+                const wrongModalId = showFeedbackModal(false, 'ざんねん！', 'もういちど きいてみよう！');
                 setTimeout(() => {
-                    hideFeedbackModal();
+                    hideFeedbackModal(wrongModalId);
+                    if (sessionId !== gameSessionId) return;
                     isProcessingChoice = false;
                 }, 1000);
             }
@@ -1291,8 +1334,11 @@
         }
 
         function goToStartScreen() {
+            gameSessionId++;
             clearInterval(timerInterval);
+            stopCardSpeech();
             window.speechSynthesis?.cancel();
+            hideFeedbackModal();
 
             document.getElementById('game-over-modal')?.classList.add('hidden');
             document.getElementById('game-screen')?.classList.add('hidden');
@@ -1304,6 +1350,9 @@
         }
 
         function restartGame() {
+            gameSessionId++;
+            stopCardSpeech();
+            hideFeedbackModal();
             isGameOver = false;
             isProcessingChoice = false;
             score = 0;
@@ -1339,9 +1388,9 @@
 
             if (mode === 'all' && !isMixCleared) {
                 playIncorrectSound();
-                showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', '4<ruby>択<rt>たく</rt></ruby>クイズの「ミックス」で全問クリアしてね！');
+                const lockModalId = showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', '4<ruby>択<rt>たく</rt></ruby>クイズの「ミックス」で全問クリアしてね！');
                 setTimeout(() => {
-                    hideFeedbackModal();
+                    hideFeedbackModal(lockModalId);
                 }, 2000);
                 return;
             }
@@ -1384,9 +1433,9 @@
         function setLetterCase(mode) {
             if (!unlockedModes.includes(mode)) {
                 playIncorrectSound();
-                showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', '今あそべるゲームを ぜんぶクリアしてね！');
+                const lockModalId = showFeedbackModal(false, '<ruby>ロック<rt>ろっく</rt></ruby>されているよ！', '今あそべるゲームを ぜんぶクリアしてね！');
                 setTimeout(() => {
-                    hideFeedbackModal();
+                    hideFeedbackModal(lockModalId);
                 }, 2000);
                 return;
             }
@@ -1479,12 +1528,12 @@
                     const randomIndex = Math.floor(Math.random() * lockedModes.length);
                     const newlyUnlocked = lockedModes[randomIndex];
                     unlockedModes.push(newlyUnlocked.id);
-                    localStorage.setItem('alphabet_unlocked_modes', JSON.stringify(unlockedModes));
+                    storageSet('alphabet_unlocked_modes', JSON.stringify(unlockedModes));
 
                     setTimeout(() => {
-                        showFeedbackModal(true, '🎉 ロック解除！', 'あたらしくゲームが1つ あそべるようになったよ！');
+                        const unlockModalId = showFeedbackModal(true, '🎉 ロック解除！', 'あたらしくゲームが1つ あそべるようになったよ！');
                         setTimeout(() => {
-                            hideFeedbackModal();
+                            hideFeedbackModal(unlockModalId);
                         }, 2500);
                     }, 800);
 
@@ -1526,14 +1575,22 @@
             renderCardsMode();
         }
 
-        function playCardSound(item) {
+        function stopCardSpeech() {
+            cardSpeechId++;
             if (cardSpeechTimeout) {
                 clearTimeout(cardSpeechTimeout);
                 cardSpeechTimeout = null;
             }
+        }
+
+        function playCardSound(item) {
+            stopCardSpeech();
+            const myCardSpeechId = cardSpeechId;
 
             const textToSpeak = item.speechText || item.name || item.letter;
             speakText(textToSpeak, 'en-US', () => {
+                // 別のカードが押されていたら、前のカードの単語は読まない
+                if (myCardSpeechId !== cardSpeechId) return;
                 if (item.word && item.word.toLowerCase() !== textToSpeak.toLowerCase()) {
                     cardSpeechTimeout = setTimeout(() => {
                         speakText(item.word, 'en-US');
@@ -1673,7 +1730,8 @@
             const text = document.getElementById('feedback-text');
             const sub = document.getElementById('feedback-sub');
 
-            if (!overlay || !box) return;
+            feedbackModalId++;
+            if (!overlay || !box) return feedbackModalId;
 
             if (icon) icon.innerText = isCorrect ? '⭕' : '❌';
             if (text) text.innerHTML = mainTextHtml;
@@ -1682,9 +1740,12 @@
             overlay.classList.remove('opacity-0', 'pointer-events-none');
             box.classList.remove('scale-50');
             box.classList.add('scale-100');
+            return feedbackModalId;
         }
 
-        function hideFeedbackModal() {
+        function hideFeedbackModal(modalId) {
+            // 別のメッセージが後から表示されていたら、古いタイマーでは消さない
+            if (modalId !== undefined && modalId !== feedbackModalId) return;
             const overlay = document.getElementById('feedback-overlay');
             const box = document.getElementById('feedback-box');
 
